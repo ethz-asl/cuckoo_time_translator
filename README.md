@@ -1,5 +1,5 @@
-# foreign time translation
-### Algorithms for translating times emitted by foreign clocks into local time
+# CuckooTranslator
+### Algorithms for translating times emitted by other (cheap) clocks into local system time
 
 The dominant application is translating hardware timestamps of a sensor into the system time of a receiving computer system.
 
@@ -16,4 +16,3 @@ But this is beyond this repository.
 ### Why translation rather than synchronization? 
 Because **synchronization** refers to what one does to clocks to make them run at the same speed and yield similar times when read at the same time (as for instance NTP and PTP do to computer clocks), whereas the algorithms in this repository are trying to only **translate** the time of one clock for a given event into the another clock's time for the *same* event and not touch the clocks at all.
 
- 
