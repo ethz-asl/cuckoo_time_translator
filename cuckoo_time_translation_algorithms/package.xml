@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>cuckoo_time_translation_algorithms</name>
+  <version>0.0.1</version>
+  <description>
+    Algorithms for translating times emitted by other (cheap) clocks into local system time.
+    The dominant application is translating hardware timestamps of a sensor into the system time of a receiving computer system.
+  </description>
+
+  <author email="hannes.sommer@mavt.ethz.ch">Hannes Sommer</author>
+  <maintainer email="hannes.sommer@mavt.ethz.ch">Hannes Sommer</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <depend>cmake_modules</depend>
+
+  <test_depend>gtest</test_depend>
+</package>

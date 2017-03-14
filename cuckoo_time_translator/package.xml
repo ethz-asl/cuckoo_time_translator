@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>cuckoo_time_translator</name>
+  <version>0.0.0</version>
+  <description>cuckoo_time_translator</description>
+
+  <author email="hannes.sommer@mavt.ethz.ch">Hannes Sommer</author>
+  <maintainer email="hannes.sommer@mavt.ethz.ch">Hannes Sommer</maintainer>
+  <license>New BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>driver_base</depend>
+  <depend>dynamic_reconfigure</depend>
+
+  <build_depend>message_generation</build_depend>
+  <depend>std_msgs</depend>
+  <exec_depend>message_runtime</exec_depend>
+
+  <depend>cuckoo_time_translation_algorithms</depend>
+
+  <test_depend>rostest</test_depend>
+</package>
