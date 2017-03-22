@@ -4,18 +4,36 @@
 #include <stdint.h>
 
 namespace cuckoo_time_translator {
+
+class UnwrappedStamp {
+ public:
+  UnwrappedStamp(const UnwrappedStamp&) = default;
+
+  uint64_t getValue() const {
+    return stamp_;
+  }
+ private:
+  UnwrappedStamp(uint64_t stamp) : stamp_(stamp){}
+  friend class TimestampUnwrapper;
+  uint64_t stamp_;
+};
+
 class TimestampUnwrapper {
  public:
   TimestampUnwrapper(uint64_t wrapAroundNumber, double clockFrequencyHz);
 
   void updateWithNewStamp(uint32_t newHwStamp);
 
-  uint64_t getUnwrappedStamp() const {
-    return (uint64_t) wrapsCounter_ * wrapAroundNumber_ + lastStamp_;
+  UnwrappedStamp getUnwrappedStamp() const {
+    return UnwrappedStamp((uint64_t) wrapsCounter_ * wrapAroundNumber_ + lastStamp_);
+  }
+
+  double toSec(UnwrappedStamp stamp) const {
+    return (double) stamp.getValue() / clockFrequencyHz_;
   }
 
   double toSec() const {
-    return (double) getUnwrappedStamp() / clockFrequencyHz_;
+    return toSec(getUnwrappedStamp());
   }
 
   double getClockFrequencyHz() const {

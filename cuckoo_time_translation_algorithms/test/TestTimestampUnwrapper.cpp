@@ -31,22 +31,25 @@ TEST(TimeUnwrapper, Init) {
   const uint64_t kWrapAroundNumber = 1000ul;
   TimestampUnwrapper unwrapper(kWrapAroundNumber, 100u);
 
-  EXPECT_EQ(0u, unwrapper.getUnwrappedStamp());
+  EXPECT_EQ(0u, unwrapper.getUnwrappedStamp().getValue());
   EXPECT_EQ(kWrapAroundNumber, unwrapper.getWrapAroundNumber());
 
   EXPECT_EQ(0.0, unwrapper.toSec());
+  EXPECT_EQ(0.0, unwrapper.toSec(unwrapper.getUnwrappedStamp()));
 }
 
 TEST(TimeUnwrapper, Wrap) {
   TimestampUnwrapper unwrapper(1000ul, 100u);
 
   unwrapper.updateWithNewStamp(900u);
-  EXPECT_EQ(900u, unwrapper.getUnwrappedStamp());
+  EXPECT_EQ(900u, unwrapper.getUnwrappedStamp().getValue());
   EXPECT_EQ(9.0, unwrapper.toSec());
+  EXPECT_EQ(9.0, unwrapper.toSec(unwrapper.getUnwrappedStamp()));
 
   unwrapper.updateWithNewStamp(0u);
-  EXPECT_EQ(1000lu, unwrapper.getUnwrappedStamp());
+  EXPECT_EQ(1000lu, unwrapper.getUnwrappedStamp().getValue());
   EXPECT_EQ(10.0, unwrapper.toSec());
+  EXPECT_EQ(10.0, unwrapper.toSec(unwrapper.getUnwrappedStamp()));
 }
 
 TEST(TimeUnwrapper, detectWrapAroundNumberTooSmall) {
@@ -58,7 +61,7 @@ TEST(TimeUnwrapper, detectWrapAroundNumberTooSmall) {
   std::string expectedOutput = "Error:   newStamp=1999 is larger than wrapAroundNumber=1000 -> adapting wrapAroundNumber to 2000!";
   EXPECT_EQ(expectedOutput, captureErr.getAndFlush().substr(0, expectedOutput.size()));
   unwrapper.updateWithNewStamp(10u);
-  EXPECT_EQ(2000lu + 10lu, unwrapper.getUnwrappedStamp());
+  EXPECT_EQ(2000lu + 10lu, unwrapper.getUnwrappedStamp().getValue());
 }
 
 TEST(TimeUnwrapper, detectWrapAroundNumberTooLarge) {
