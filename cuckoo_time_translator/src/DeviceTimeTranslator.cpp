@@ -90,7 +90,7 @@ class DeviceTimeTranslator::Impl {
       switchingTimeSeconds_ = expectedSwitchingTimeSeconds;
       somethingWasUpdated = true;
 
-      switch(expectedAlgo){
+      switch(expectedAlgo.type){
         case FilterAlgorithm::ConvexHull:
           timeTranslator_ = createOwt<ConvexHullOwt>();
           break;
@@ -98,7 +98,7 @@ class DeviceTimeTranslator::Impl {
           timeTranslator_ = createOwt<KalmanOwt>();
           break;
         default:
-          ROS_ERROR("Unknown device time filter algorithm : %u. Falling back to no filter (NopOwt).", expectedAlgo);
+          ROS_ERROR("Unknown device time filter algorithm : %u. Falling back to no filter (NopOwt).", expectedAlgo.type);
         case FilterAlgorithm::None:
           timeTranslator_ = new NopOwt();
           break;
@@ -139,7 +139,7 @@ class DeviceTimeTranslator::Impl {
 
 void DeviceTimeTranslator::configCallback(DeviceTimeTranslatorConfig &config, uint32_t level)
 {
-  pImpl_->setExpectedAlgo(FilterAlgorithm(config.filter_algo));
+  pImpl_->setExpectedAlgo(FilterAlgorithm::Type(config.filter_algo));
   pImpl_->setExpectedSwitchingTimeSeconds(config.switch_time);
 }
 
@@ -190,7 +190,7 @@ ros::Time DeviceTimeTranslator::update(const TimestampUnwrapper & eventStamp, co
     msg.event_stamp = eventStamp.getUnwrappedStamp().getValue();
     msg.receive_time = receiveTime;
     msg.offset_secs = offsetSecs;
-    msg.filter_algorithm = uint8_t(pImpl_->getCurrentAlgo());
+    msg.filter_algorithm = uint8_t(pImpl_->getCurrentAlgo().type);
     pImpl_->getDeviceTimePub().publish(msg);
   }
   ROS_DEBUG("Device time %lu + receive time %10.6f sec mapped to %10.6f sec (receive - translated = %.3f ms).", eventStamp.getUnwrappedStamp().getValue(), receiveTime.toSec(), translatedTime, (receiveTime.toSec() - translatedTime) * 1000);

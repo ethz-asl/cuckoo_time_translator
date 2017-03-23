@@ -7,8 +7,6 @@ namespace cuckoo_time_translator {
 
 class UnwrappedStamp {
  public:
-  UnwrappedStamp(const UnwrappedStamp&) = default;
-
   uint64_t getValue() const {
     return stamp_;
   }

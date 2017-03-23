@@ -11,10 +11,16 @@ namespace cuckoo_time_translator {
 
 class DeviceTimeTranslatorConfig;
 
-enum class FilterAlgorithm {
-  None,
-  ConvexHull,
-  Kalman,
+struct FilterAlgorithm {
+  enum Type {
+    None,
+    ConvexHull,
+    Kalman,
+  } type;
+
+  FilterAlgorithm(Type t) : type(t) {}
+  bool operator == (const FilterAlgorithm & other) { return type == other.type; }
+  bool operator != (const FilterAlgorithm & other) { return type != other.type; }
 };
 
 
