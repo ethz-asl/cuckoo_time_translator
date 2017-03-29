@@ -11,7 +11,7 @@ constexpr double MockCuckooDeviceDriver::kOffset;
 
 MockCuckooDeviceDriver::MockCuckooDeviceDriver(ros::NodeHandle & nh) :
   cuckooClock(kWrappingNumber, kFreq, kSkew, ros::Duration(kOffset)),
-  translator(TimestampUnwrapper(kWrappingNumber, kFreq), nh)
+  translator(WrappingClockParameters{kWrappingNumber, kFreq}, nh.getNamespace())
 {
 }
 

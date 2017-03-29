@@ -29,48 +29,70 @@ public:
 
 TEST(TimeUnwrapper, Init) {
   const uint64_t kWrapAroundNumber = 1000ul;
-  TimestampUnwrapper unwrapper(kWrapAroundNumber, 100u);
+  TimestampUnwrapperEventOnly unwrapper({kWrapAroundNumber, 100u});
 
-  EXPECT_EQ(0u, unwrapper.getUnwrappedStamp().getValue());
+  EXPECT_EQ(0u, unwrapper.getUnwrappedEventStamp().getValue());
   EXPECT_EQ(kWrapAroundNumber, unwrapper.getWrapAroundNumber());
 
-  EXPECT_EQ(0.0, unwrapper.toSec());
-  EXPECT_EQ(0.0, unwrapper.toSec(unwrapper.getUnwrappedStamp()));
+  EXPECT_EQ(0.0, unwrapper.getEventStampSec());
+  EXPECT_EQ(0.0, unwrapper.stampToSec(unwrapper.getUnwrappedEventStamp()));
 }
 
 TEST(TimeUnwrapper, Wrap) {
-  TimestampUnwrapper unwrapper(1000ul, 100u);
+  TimestampUnwrapperEventOnly unwrapper({1000ul, 100u});
 
-  unwrapper.updateWithNewStamp(900u);
-  EXPECT_EQ(900u, unwrapper.getUnwrappedStamp().getValue());
-  EXPECT_EQ(9.0, unwrapper.toSec());
-  EXPECT_EQ(9.0, unwrapper.toSec(unwrapper.getUnwrappedStamp()));
+  unwrapper.updateWithNewEventStamp(900u);
+  EXPECT_EQ(900u, unwrapper.getUnwrappedEventStamp().getValue());
+  EXPECT_EQ(9.0, unwrapper.getEventStampSec());
+  EXPECT_EQ(9.0, unwrapper.stampToSec(unwrapper.getUnwrappedEventStamp()));
 
-  unwrapper.updateWithNewStamp(0u);
-  EXPECT_EQ(1000lu, unwrapper.getUnwrappedStamp().getValue());
-  EXPECT_EQ(10.0, unwrapper.toSec());
-  EXPECT_EQ(10.0, unwrapper.toSec(unwrapper.getUnwrappedStamp()));
+  unwrapper.updateWithNewEventStamp(0u);
+  EXPECT_EQ(1000lu, unwrapper.getUnwrappedEventStamp().getValue());
+  EXPECT_EQ(10.0, unwrapper.getEventStampSec());
+  EXPECT_EQ(10.0, unwrapper.stampToSec(unwrapper.getUnwrappedEventStamp()));
+}
+
+TEST(TimeUnwrapper, WrapWithTransmit) {
+  TimestampUnwrapperEventAndTransmit unwrapper({1000ul, 100u});
+
+  unwrapper.updateWithNewEventStamp(900u);
+  unwrapper.updateWithNewTransmitStamp(950u);
+  EXPECT_EQ(900u, unwrapper.getUnwrappedEventStamp().getValue());
+  EXPECT_EQ(950u, unwrapper.getUnwrappedTransmitStamp().getValue());
+  EXPECT_EQ(9.0, unwrapper.getEventStampSec());
+  EXPECT_EQ(9.0, unwrapper.stampToSec(unwrapper.getUnwrappedEventStamp()));
+  EXPECT_EQ(9.5, unwrapper.getTransmitStampSec());
+  EXPECT_EQ(9.5, unwrapper.stampToSec(unwrapper.getUnwrappedTransmitStamp()));
+
+  unwrapper.updateWithNewEventStamp(0u);
+  unwrapper.updateWithNewTransmitStamp(50u);
+  EXPECT_EQ(1000lu, unwrapper.getUnwrappedEventStamp().getValue());
+  EXPECT_EQ(10.0, unwrapper.getEventStampSec());
+  EXPECT_EQ(10.0, unwrapper.stampToSec(unwrapper.getUnwrappedEventStamp()));
+  EXPECT_EQ(1050lu, unwrapper.getUnwrappedTransmitStamp().getValue());
+  EXPECT_EQ(10.5, unwrapper.getTransmitStampSec());
+  EXPECT_EQ(10.5, unwrapper.stampToSec(unwrapper.getUnwrappedTransmitStamp()));
 }
 
 TEST(TimeUnwrapper, detectWrapAroundNumberTooSmall) {
-  TimestampUnwrapper unwrapper(1000ul, 100u);
+  TimestampUnwrapperEventOnly unwrapper({1000ul, 100u});
   CaptureStream captureErr(std::cerr);
 
-  unwrapper.updateWithNewStamp(1999u);
+  unwrapper.updateWithNewEventStamp(1999u);
   EXPECT_EQ(2000lu, unwrapper.getWrapAroundNumber());
-  std::string expectedOutput = "Error:   newStamp=1999 is larger than wrapAroundNumber=1000 -> adapting wrapAroundNumber to 2000!";
+  std::string expectedOutput = "Error:   newDeviceStamp=1999 is larger than wrapAroundNumber=1000 -> adapting wrapAroundNumber to 2000!";
   EXPECT_EQ(expectedOutput, captureErr.getAndFlush().substr(0, expectedOutput.size()));
-  unwrapper.updateWithNewStamp(10u);
-  EXPECT_EQ(2000lu + 10lu, unwrapper.getUnwrappedStamp().getValue());
+  unwrapper.updateWithNewEventStamp(10u);
+  EXPECT_EQ(2000lu + 10lu, unwrapper.getUnwrappedEventStamp().getValue());
 }
 
 TEST(TimeUnwrapper, detectWrapAroundNumberTooLarge) {
-  TimestampUnwrapper unwrapper(1000ul, 100u);
+  TimestampUnwrapperEventOnly unwrapper({1000ul, 100u});
   CaptureStream captureErr(std::cerr);
 
   for (int i = 0; i < 10; i ++){
-    unwrapper.updateWithNewStamp(500u);
-    unwrapper.updateWithNewStamp(0u);
+    unwrapper.updateWithNewEventStamp(500u);
+    unwrapper.updateWithNewEventStamp(0u);
   }
   std::string expectedOutput = "Warning: Last maxStamp=500, suspiciously small! Maybe it wraps in fact earlier? (wrapAroundNumber=1000)";
   EXPECT_EQ(expectedOutput, captureErr.getAndFlush().substr(0, expectedOutput.size()));

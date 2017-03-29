@@ -15,11 +15,11 @@ OneWayTranslator::~OneWayTranslator() {
 NopOwt::~NopOwt() {
 }
 
-LocalTime NopOwt::translateToLocalTimestamp(RemoteTime remoteTimeTics) const {
+LocalTime NopOwt::translateToLocalTimestamp(RemoteTime /*remoteTimeTics*/) const {
   throw std::runtime_error("translateToLocalTimestamp is not implemented in NopOwt!");
 }
 
-LocalTime NopOwt::updateAndTranslateToLocalTimestamp(RemoteTime remoteTimeTics, LocalTime localTimeSecs) {
+LocalTime NopOwt::updateAndTranslateToLocalTimestamp(RemoteTime /*remoteTimeTics*/, LocalTime localTimeSecs) {
   return localTimeSecs;
 }
 
@@ -31,7 +31,7 @@ void NopOwt::printNameAndConfig(std::ostream& o) const {
   o << "NopOwt()";
 }
 
-void NopOwt::printState(std::ostream& o) const {
+void NopOwt::printState(std::ostream& /*o*/) const {
 }
 
 void NopOwt::reset() {

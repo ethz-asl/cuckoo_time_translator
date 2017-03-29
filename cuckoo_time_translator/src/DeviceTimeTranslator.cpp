@@ -20,7 +20,7 @@ const std::string DeviceTimeTranslator::kDeviceTimeNamePostfix = "/device_time";
 
 class DeviceTimeTranslator::Impl {
  public:
-  Impl(const std::string & nameSpace, ros::NodeHandle& nh) : timeTranslator_(NULL), nh_(nameSpace + kDeviceTimeNamePostfix), srv_(nh_)
+  Impl(const std::string & nameSpace) : timeTranslator_(NULL), nh_(nameSpace + kDeviceTimeNamePostfix), srv_(nh_)
   {
   }
 
@@ -98,7 +98,7 @@ class DeviceTimeTranslator::Impl {
           timeTranslator_ = createOwt<KalmanOwt>();
           break;
         default:
-          ROS_ERROR("Unknown device time filter algorithm : %u. Falling back to no filter (NopOwt).", expectedAlgo.type);
+          ROS_ERROR("Unknown device time filter algorithm : %u. Falling back to no filter (NopOwt).", static_cast<unsigned>(expectedAlgo.type));
         case FilterAlgorithm::None:
           timeTranslator_ = new NopOwt();
           break;
@@ -137,19 +137,14 @@ class DeviceTimeTranslator::Impl {
   DeviceTimestamp msg;
 };
 
-void DeviceTimeTranslator::configCallback(DeviceTimeTranslatorConfig &config, uint32_t level)
+void DeviceTimeTranslator::configCallback(DeviceTimeTranslatorConfig &config, uint32_t /*level*/)
 {
   pImpl_->setExpectedAlgo(FilterAlgorithm::Type(config.filter_algo));
   pImpl_->setExpectedSwitchingTimeSeconds(config.switch_time);
 }
 
-DeviceTimeTranslator::DeviceTimeTranslator(ros::NodeHandle& nh) :
-    DeviceTimeTranslator(nh.getNamespace(), nh)
-{
-}
-
-DeviceTimeTranslator::DeviceTimeTranslator(const std::string& nameSpace, ros::NodeHandle& nh) :
-    pImpl_(new Impl(nameSpace, nh))
+DeviceTimeTranslator::DeviceTimeTranslator(const std::string& nameSpace) :
+    pImpl_(new Impl(nameSpace))
 {
   ROS_INFO("DeviceTimeTranslator is going to publishing device timestamps on %s.", pImpl_->getNh().getNamespace().c_str());
   pImpl_->getDeviceTimePub() = pImpl_->getNh().advertise<DeviceTimestamp>("", 5);
@@ -164,18 +159,23 @@ FilterAlgorithm DeviceTimeTranslator::getCurrentFilterAlgorithm() const {
   return pImpl_->getCurrentAlgo();
 }
 
-ros::Time DeviceTimeTranslator::update(const TimestampUnwrapper & eventStamp, const TimestampUnwrapper & transmitStamp, const ros::Time & receiveTime, const double offsetSecs) {
+
+void DeviceTimeTranslator::setFilterAlgorithm(FilterAlgorithm filterAlgorithm) const {
+  pImpl_->setExpectedAlgo(filterAlgorithm);
+}
+
+ros::Time DeviceTimeTranslator::update(const TimestampUnwrapper & timestampUnwrapper, const ros::Time & receiveTime, const double offsetSecs) {
   if(!pImpl_) return receiveTime;
 
   auto & timeTranslator = pImpl_->getTimeTranslator();
 
-  double translatedTime = timeTranslator.updateAndTranslateToLocalTimestamp(RemoteTime(transmitStamp.toSec()), LocalTime(receiveTime.toSec()));
+  double translatedTime = timeTranslator.updateAndTranslateToLocalTimestamp(RemoteTime(timestampUnwrapper.getTransmitStampSec()), LocalTime(receiveTime.toSec()));
 
   auto & msg = pImpl_->getMsg();
-  if(&transmitStamp != &eventStamp){
-    msg.transmit_stamp = transmitStamp.getUnwrappedStamp().getValue();
+  if(timestampUnwrapper.hasSeparateTransmitTime()){
+    msg.transmit_stamp = timestampUnwrapper.getUnwrappedTransmitStamp().getValue();
     if(timeTranslator.isReady()){
-      translatedTime = timeTranslator.translateToLocalTimestamp(RemoteTime(eventStamp.toSec()));
+      translatedTime = timeTranslator.translateToLocalTimestamp(RemoteTime(timestampUnwrapper.getEventStampSec()));
     }
   }
   if (timeTranslator.isReady()){
@@ -187,53 +187,65 @@ ros::Time DeviceTimeTranslator::update(const TimestampUnwrapper & eventStamp, co
   msg.header.stamp += ros::Duration(offsetSecs);
 
   if(pImpl_->getDeviceTimePub().getNumSubscribers()){
-    msg.event_stamp = eventStamp.getUnwrappedStamp().getValue();
+    msg.event_stamp = timestampUnwrapper.getUnwrappedEventStamp().getValue();
     msg.receive_time = receiveTime;
     msg.offset_secs = offsetSecs;
     msg.filter_algorithm = uint8_t(pImpl_->getCurrentAlgo().type);
     pImpl_->getDeviceTimePub().publish(msg);
   }
-  ROS_DEBUG("Device time %lu + receive time %10.6f sec mapped to %10.6f sec (receive - translated = %.3f ms).", eventStamp.getUnwrappedStamp().getValue(), receiveTime.toSec(), translatedTime, (receiveTime.toSec() - translatedTime) * 1000);
+  ROS_DEBUG("Device time %llu + receive time %10.6f sec mapped to %10.6f sec (receive - translated = %.3f ms).", static_cast<long long unsigned>(timestampUnwrapper.getUnwrappedEventStamp().getValue()), receiveTime.toSec(), translatedTime, (receiveTime.toSec() - translatedTime) * 1000);
   return msg.header.stamp;
 }
 
-ros::Time DeviceTimeTranslator::translate(const TimestampUnwrapper & eventStampUnwrapper, UnwrappedStamp unwrappedEventStamp) const {
-  return ros::Time(pImpl_->getTimeTranslator().translateToLocalTimestamp(RemoteTime(eventStampUnwrapper.toSec(unwrappedEventStamp))));
+ros::Time DeviceTimeTranslator::translate(const TimestampUnwrapper & timestampUnwrapper, UnwrappedStamp unwrappedEventStamp) const {
+  return ros::Time(pImpl_->getTimeTranslator().translateToLocalTimestamp(RemoteTime(timestampUnwrapper.stampToSec(unwrappedEventStamp))));
 }
 
-DeviceTimeUnwrapperAndTranslator::DeviceTimeUnwrapperAndTranslator(TimestampUnwrapper timestampUnwrapper, ros::NodeHandle& nh) :
-    DeviceTimeUnwrapperAndTranslator(timestampUnwrapper, nh.getNamespace(), nh)
+template <typename Unwrapper>
+DeviceTimeUnwrapperAndTranslator<Unwrapper>::DeviceTimeUnwrapperAndTranslator(const UnwrapperClockParameters & clockParameters, const std::string & nameSpace) :
+    timestampUnwrapper(clockParameters),
+    translator(nameSpace)
 {
 }
 
-DeviceTimeUnwrapperAndTranslator::DeviceTimeUnwrapperAndTranslator(TimestampUnwrapper timestampUnwrapper, const std::string & nameSpace, ros::NodeHandle& nh) :
-    eventUnwrapper(timestampUnwrapper),
-    transmitUnwrapper(timestampUnwrapper),
-    translator(nameSpace, nh)
+template <typename Unwrapper>
+ros::Time DeviceTimeUnwrapperAndTranslator<Unwrapper>::update(Timestamp eventStamp, const ros::Time & receiveTime, double offset) {
+  timestampUnwrapper.updateWithNewEventStamp(eventStamp);
+  return translator.update(timestampUnwrapper, receiveTime, offset);
+}
+
+template <typename Unwrapper>
+ros::Time DeviceTimeUnwrapperAndTranslatorWithTransmitTime<Unwrapper>::update(Timestamp eventStamp, Timestamp transmitStamp, const ros::Time & receiveTime, double offset) {
+  this->timestampUnwrapper.updateWithNewEventStamp(eventStamp);
+  this->timestampUnwrapper.updateWithNewTransmitStamp(transmitStamp);
+  return this->translator.update(this->timestampUnwrapper, receiveTime, offset);
+}
+
+template <typename Unwrapper>
+ros::Time DeviceTimeUnwrapperAndTranslator<Unwrapper>::translate(UnwrappedStamp unwrappedStamp) const {
+  return translator.translate(timestampUnwrapper, unwrappedStamp);
+}
+
+template <typename Unwrapper>
+UnwrappedStamp DeviceTimeUnwrapperAndTranslator<Unwrapper>::unwrapEventStamp(typename Unwrapper::Timestamp eventStamp) {
+  timestampUnwrapper.updateWithNewEventStamp(eventStamp);
+  return timestampUnwrapper.getUnwrappedEventStamp();
+}
+
+template<typename Unwrapper_>
+DeviceTimeUnwrapperAndTranslatorWithTransmitTime<Unwrapper_>::DeviceTimeUnwrapperAndTranslatorWithTransmitTime(const UnwrapperClockParameters& clockParameters, const std::string& nameSpace) :
+  DeviceTimeUnwrapperAndTranslator<Unwrapper_>(clockParameters, nameSpace)
 {
 }
 
-DeviceTimeUnwrapperAndTranslator::~DeviceTimeUnwrapperAndTranslator() {
+template <typename Unwrapper>
+UnwrappedStamp DeviceTimeUnwrapperAndTranslatorWithTransmitTime<Unwrapper>::unwrapTransmitStamp(Timestamp eventStamp) {
+  this->timestampUnwrapper.updateWithNewTransmitStamp(eventStamp);
+  return this->timestampUnwrapper.getUnwrappedTransmitStamp();
 }
 
-ros::Time DeviceTimeUnwrapperAndTranslator::update(uint32_t eventStamp, uint32_t transmitStamp, const ros::Time & receiveTime, double offset) {
-  eventUnwrapper.updateWithNewStamp(eventStamp);
-  transmitUnwrapper.updateWithNewStamp(transmitStamp);
-  return translator.update(eventUnwrapper, transmitUnwrapper, receiveTime, offset);
-}
-
-ros::Time DeviceTimeUnwrapperAndTranslator::update(uint32_t eventStamp, const ros::Time & receiveTime, double offset) {
-  eventUnwrapper.updateWithNewStamp(eventStamp);
-  return translator.update(eventUnwrapper, eventUnwrapper, receiveTime, offset);
-}
-
-ros::Time DeviceTimeUnwrapperAndTranslator::translate(UnwrappedStamp unwrappedStamp) const {
-  return translator.translate(eventUnwrapper, unwrappedStamp);
-}
-
-UnwrappedStamp DeviceTimeUnwrapperAndTranslator::unwrapEventStamp(uint32_t eventStamp) {
-  eventUnwrapper.updateWithNewStamp(eventStamp);
-  return eventUnwrapper.getUnwrappedStamp();
-}
+template class DeviceTimeUnwrapperAndTranslator<TimestampUnwrapperEventOnly>;
+template class DeviceTimeUnwrapperAndTranslator<TimestampPassThrough>;
+template class DeviceTimeUnwrapperAndTranslatorWithTransmitTime<TimestampUnwrapperEventAndTransmit>;
 
 }

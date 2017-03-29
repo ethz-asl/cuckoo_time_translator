@@ -27,8 +27,6 @@ void MockCuckooClock::getNewSimulatedMeasurementTimes(uint32_t& deviceTime, ros:
       deviceTime = simulatedDeviceTime;
       receiveTime = now;
       return;
-    } else {
-      std::cout << "had to wait!" << std::endl; // XXX: debug output of had to wait!
     }
     std::this_thread::sleep_for(std::chrono::microseconds(1));
   } while(true);

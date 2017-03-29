@@ -11,6 +11,7 @@ namespace cuckoo_time_translator {
 
 class DeviceTimeTranslatorConfig;
 
+//TODO (c++11) use enum class
 struct FilterAlgorithm {
   enum Type {
     None,
@@ -23,20 +24,19 @@ struct FilterAlgorithm {
   bool operator != (const FilterAlgorithm & other) { return type != other.type; }
 };
 
-
 class DeviceTimeTranslator {
  public:
   const static std::string kDeviceTimeNamePostfix;
 
-  DeviceTimeTranslator(ros::NodeHandle & nh);
-  DeviceTimeTranslator(const std::string & nameSpace, ros::NodeHandle & nh);
+  DeviceTimeTranslator(const std::string & nameSpace);
 
   ~DeviceTimeTranslator();
 
-  ros::Time update(const TimestampUnwrapper & eventStamp, const TimestampUnwrapper & transmitStamp, const ros::Time & receiveTime, double offset = 0);
-  ros::Time translate(const TimestampUnwrapper & eventStampUnwrapper, UnwrappedStamp unwrappedEventStamp) const;
+  ros::Time update(const TimestampUnwrapper & timestampUnwrapper, const ros::Time & receiveTime, double offset = 0);
+  ros::Time translate(const TimestampUnwrapper & timestampUnwrapper, UnwrappedStamp unwrappedEventStamp) const;
 
   FilterAlgorithm getCurrentFilterAlgorithm() const;
+  void setFilterAlgorithm(FilterAlgorithm filterAlgorithm) const;
 
  private:
   void configCallback(DeviceTimeTranslatorConfig &config, uint32_t level);
@@ -45,14 +45,16 @@ class DeviceTimeTranslator {
   Impl *pImpl_;
 };
 
+template <typename Unwrapper_ = TimestampUnwrapperEventOnly>
 class DeviceTimeUnwrapperAndTranslator {
  public:
-  DeviceTimeUnwrapperAndTranslator(TimestampUnwrapper timestampUnwrapper, ros::NodeHandle & nh);
-  DeviceTimeUnwrapperAndTranslator(TimestampUnwrapper timestampUnwrapper, const std::string & nodeName, ros::NodeHandle & nh);
-  ~DeviceTimeUnwrapperAndTranslator();
+  typedef Unwrapper_ Unwrapper;
+  typedef typename Unwrapper::Timestamp Timestamp;
+  typedef typename Unwrapper_::UnwrapperClockParameters UnwrapperClockParameters;
 
-  ros::Time update(uint32_t eventStamp, uint32_t transmitStamp, const ros::Time & receiveTime, double offset = 0.0);
-  ros::Time update(uint32_t eventStamp, const ros::Time & receiveTime, double offset = 0.0);
+  DeviceTimeUnwrapperAndTranslator(const UnwrapperClockParameters & clockParameters, const std::string & nameSpace);
+
+  ros::Time update(Timestamp eventStamp, const ros::Time & receiveTime, double offset = 0.0);
 
   /**
    * Unwrap a new event's device time stamp.
@@ -64,14 +66,49 @@ class DeviceTimeUnwrapperAndTranslator {
    * @param eventStamp the event's stamp assigned by the device.
    * @return the translated local time
    */
-  UnwrappedStamp unwrapEventStamp(uint32_t eventStamp);
+  UnwrappedStamp unwrapEventStamp(Timestamp eventStamp);
 
   ros::Time translate(UnwrappedStamp unwrappedStamp) const;
- private:
-  TimestampUnwrapper eventUnwrapper, transmitUnwrapper;
+
+  void setFilterAlgorithm(FilterAlgorithm filterAlgorithm) const {
+    translator.setFilterAlgorithm(filterAlgorithm);
+  }
+ protected:
+  Unwrapper timestampUnwrapper;
   DeviceTimeTranslator translator;
 };
 
+template <typename Unwrapper_ = TimestampUnwrapperEventAndTransmit>
+class DeviceTimeUnwrapperAndTranslatorWithTransmitTime : public DeviceTimeUnwrapperAndTranslator<Unwrapper_> {
+ public:
+  typedef Unwrapper_ Unwrapper;
+  typedef typename Unwrapper_::TransmitTimestamp Timestamp;
+  typedef typename Unwrapper_::UnwrapperClockParameters UnwrapperClockParameters;
+
+  //TODO (c++11) inherit constructor
+  DeviceTimeUnwrapperAndTranslatorWithTransmitTime(const UnwrapperClockParameters & clockParameters, const std::string & nameSpace);
+
+  ros::Time update(Timestamp eventStamp, Timestamp transmitStamp, const ros::Time & receiveTime, double offset = 0.0);
+  UnwrappedStamp unwrapTransmitStamp(Timestamp eventStamp);
+};
+
+class DefaultDeviceTimeUnwrapperAndTranslator : public DeviceTimeUnwrapperAndTranslator<> {
+ public:
+  DefaultDeviceTimeUnwrapperAndTranslator(const WrappingClockParameters & wrappingClockParameters, const std::string & nameSpace) :
+    DeviceTimeUnwrapperAndTranslator<>(wrappingClockParameters, nameSpace) {}
+};
+
+class UnwrappedDeviceTimeTranslator : public DeviceTimeUnwrapperAndTranslator<TimestampPassThrough> {
+ public:
+  UnwrappedDeviceTimeTranslator(ClockParameters clockParameters, const std::string & nameSpace) :
+    DeviceTimeUnwrapperAndTranslator<TimestampPassThrough>(clockParameters, nameSpace) {}
+};
+
+class DefaultDeviceTimeUnwrapperAndTranslatorWithTransmitTime : public DeviceTimeUnwrapperAndTranslatorWithTransmitTime<> {
+ public:
+  DefaultDeviceTimeUnwrapperAndTranslatorWithTransmitTime(const WrappingClockParameters & wrappingClockParameters, const std::string & nameSpace) :
+    DeviceTimeUnwrapperAndTranslatorWithTransmitTime<>(wrappingClockParameters, nameSpace) {}
+};
 
 }
 

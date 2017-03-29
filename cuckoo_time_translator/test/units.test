@@ -1,0 +1,3 @@
+<launch>
+  <test test-name="units" pkg="cuckoo_time_translator" type="cuckoo_time_translator-unittest" />
+</launch>

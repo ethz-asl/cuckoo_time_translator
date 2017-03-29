@@ -5,10 +5,10 @@
 namespace cuckoo_time_translator {
 
 KalmanOwt::KalmanOwt() :
-  isInitialized_(false),
-  dt_ (0),
   R_ (0),
-  lastUpdateDeviceTime_(0)
+  isInitialized_(false),
+  lastUpdateDeviceTime_(0),
+  dt_ (0)
 {
 }
 

@@ -22,7 +22,7 @@ class MockCuckooDeviceDriver {
   void step();
  private:
   MockCuckooClock cuckooClock;
-  DeviceTimeUnwrapperAndTranslator translator;
+  DeviceTimeUnwrapperAndTranslator<TimestampUnwrapperEventOnly> translator;
 };
 
 }

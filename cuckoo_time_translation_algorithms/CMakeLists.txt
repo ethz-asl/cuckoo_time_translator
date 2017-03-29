@@ -12,7 +12,7 @@ include_directories(
   ${Eigen_INCLUDE_DIRS}
 )
 
-add_definitions(--std=c++11)
+add_definitions(--std=c++11 -Wall -Wextra)
 
 if(roscpp_FOUND)
     MESSAGE(STATUS "Found ROS. Going to use its assertions")
