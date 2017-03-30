@@ -95,6 +95,7 @@ class TimestampPassThrough : public TimestampUnwrapper {
   virtual ~TimestampPassThrough();
 
   void updateWithNewEventStamp(Timestamp newDeviceStamp);
+  UnwrappedStamp toUnwrapped(Timestamp deviceStamp) const { return deviceStamp; }
 
   virtual UnwrappedStamp getUnwrappedEventStamp() const OVERRIDE;
   virtual UnwrappedStamp getUnwrappedTransmitStamp() const OVERRIDE;
