@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="cuckoo_time_translator" type="mock_cuckoo_device_driver" name="mock_cuckoo_device_driver" >
+      <param name="~algo" value="1" />
+  </node>
+  <test test-name="device_time_translator" pkg="cuckoo_time_translator" type="cuckoo_time_translator-nodetest" />
+</launch>
