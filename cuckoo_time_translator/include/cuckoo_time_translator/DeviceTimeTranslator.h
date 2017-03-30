@@ -102,6 +102,11 @@ class UnwrappedDeviceTimeTranslator : public DeviceTimeUnwrapperAndTranslator<Ti
  public:
   UnwrappedDeviceTimeTranslator(ClockParameters clockParameters, const std::string & nameSpace) :
     DeviceTimeUnwrapperAndTranslator<TimestampPassThrough>(clockParameters, nameSpace) {}
+
+  ros::Time translate(TimestampPassThrough::Timestamp timestamp) const {
+    return DeviceTimeUnwrapperAndTranslator<TimestampPassThrough>::translate(this->timestampUnwrapper.toUnwrapped(timestamp));
+  }
+
 };
 
 class DefaultDeviceTimeUnwrapperAndTranslatorWithTransmitTime : public DeviceTimeUnwrapperAndTranslatorWithTransmitTime<> {
