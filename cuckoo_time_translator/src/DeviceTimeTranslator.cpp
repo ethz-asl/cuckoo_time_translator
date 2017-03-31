@@ -178,10 +178,13 @@ ros::Time DeviceTimeTranslator::update(const TimestampUnwrapper & timestampUnwra
       translatedTime = timeTranslator.translateToLocalTimestamp(RemoteTime(timestampUnwrapper.getEventStampSec()));
     }
   }
+  float correction_secs;
   if (timeTranslator.isReady()){
     msg.header.stamp.fromSec(translatedTime);
+    correction_secs = float(receiveTime.toSec() - translatedTime);
   } else {
     msg.header.stamp = receiveTime;
+    correction_secs = 0.f;
   }
 
   msg.header.stamp += ros::Duration(offsetSecs);
@@ -190,6 +193,7 @@ ros::Time DeviceTimeTranslator::update(const TimestampUnwrapper & timestampUnwra
     msg.event_stamp = timestampUnwrapper.getUnwrappedEventStamp().getValue();
     msg.receive_time = receiveTime;
     msg.offset_secs = offsetSecs;
+    msg.correction_secs = correction_secs;
     msg.filter_algorithm = uint8_t(pImpl_->getCurrentAlgo().type);
     pImpl_->getDeviceTimePub().publish(msg);
   }
