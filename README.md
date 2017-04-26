@@ -1,4 +1,4 @@
-# CuckooTranslator
+# CuckooTimeTranslator
 ### Algorithms for translating times emitted by other (cheap) clocks into local system time
 
 The dominant application is translating hardware timestamps of a sensor into the system time of a receiving computer system.
