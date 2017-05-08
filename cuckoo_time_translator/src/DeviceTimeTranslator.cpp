@@ -20,11 +20,37 @@
 
 namespace cuckoo_time_translator {
 
-const std::string DeviceTimeTranslator::kDeviceTimeNamePostfix = "/device_time";
+const char * const NS::kDefaultSubnamespace = "device_time";
+
+NS::NS(const std::string& nameSpace, bool appendDeviceTimeSubnamespace)
+  : NS(nameSpace, (appendDeviceTimeSubnamespace ? std::string(kDefaultSubnamespace) : ""))
+{
+}
+
+std::string addHeadSlashIfNecessary(const std::string & name){
+  if (!name.empty() && name[0] != '/'){
+    return "/" + name;
+  } else {
+    return name;
+  }
+}
+
+NS::NS(const std::string& nameSpace, const std::string& subNameSpace) :
+  nameSpace_(nameSpace + addHeadSlashIfNecessary(subNameSpace))
+{
+}
+
+NS::NS(const char* nameSpace, const char* subNameSpace)
+    : NS(std::string(nameSpace), std::string(subNameSpace)) {
+}
+
+NS::NS(const char* nameSpace, bool appendDeviceTimeSubnamespace)
+    : NS(std::string(nameSpace), appendDeviceTimeSubnamespace) {
+}
 
 class DeviceTimeTranslator::Impl {
  public:
-  Impl(const std::string & nameSpace) : timeTranslator_(NULL), nh_(nameSpace + kDeviceTimeNamePostfix), srv_(nh_)
+  Impl(const std::string & nameSpace) : timeTranslator_(NULL), nh_(nameSpace), srv_(nh_)
   {
   }
 
@@ -147,7 +173,7 @@ void DeviceTimeTranslator::configCallback(DeviceTimeTranslatorConfig &config, ui
   pImpl_->setExpectedSwitchingTimeSeconds(config.switch_time);
 }
 
-DeviceTimeTranslator::DeviceTimeTranslator(const std::string& nameSpace) :
+DeviceTimeTranslator::DeviceTimeTranslator(const NS & nameSpace) :
     pImpl_(new Impl(nameSpace))
 {
   ROS_INFO("DeviceTimeTranslator is going to publishing device timestamps on %s.", pImpl_->getNh().getNamespace().c_str());
@@ -210,7 +236,7 @@ ros::Time DeviceTimeTranslator::translate(const TimestampUnwrapper & timestampUn
 }
 
 template <typename Unwrapper>
-DeviceTimeUnwrapperAndTranslator<Unwrapper>::DeviceTimeUnwrapperAndTranslator(const UnwrapperClockParameters & clockParameters, const std::string & nameSpace) :
+DeviceTimeUnwrapperAndTranslator<Unwrapper>::DeviceTimeUnwrapperAndTranslator(const UnwrapperClockParameters & clockParameters, const NS & nameSpace) :
     timestampUnwrapper(clockParameters),
     translator(nameSpace)
 {
@@ -241,7 +267,7 @@ UnwrappedStamp DeviceTimeUnwrapperAndTranslator<Unwrapper>::unwrapEventStamp(typ
 }
 
 template<typename Unwrapper_>
-DeviceTimeUnwrapperAndTranslatorWithTransmitTime<Unwrapper_>::DeviceTimeUnwrapperAndTranslatorWithTransmitTime(const UnwrapperClockParameters& clockParameters, const std::string& nameSpace) :
+DeviceTimeUnwrapperAndTranslatorWithTransmitTime<Unwrapper_>::DeviceTimeUnwrapperAndTranslatorWithTransmitTime(const UnwrapperClockParameters& clockParameters, const NS& nameSpace) :
   DeviceTimeUnwrapperAndTranslator<Unwrapper_>(clockParameters, nameSpace)
 {
 }
