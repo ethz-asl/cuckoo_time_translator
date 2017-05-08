@@ -164,7 +164,7 @@ FilterAlgorithm DeviceTimeTranslator::getCurrentFilterAlgorithm() const {
 }
 
 
-void DeviceTimeTranslator::setFilterAlgorithm(FilterAlgorithm filterAlgorithm) const {
+void DeviceTimeTranslator::setFilterAlgorithm(FilterAlgorithm filterAlgorithm) {
   pImpl_->setExpectedAlgo(filterAlgorithm);
 }
 
