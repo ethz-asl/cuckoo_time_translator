@@ -48,9 +48,63 @@ NS::NS(const char* nameSpace, bool appendDeviceTimeSubnamespace)
     : NS(std::string(nameSpace), appendDeviceTimeSubnamespace) {
 }
 
+
+class Defaults::Impl {
+ public:
+  void setFilterAlgorithm(FilterAlgorithm filterAlgorithm){
+    setParam("filter_algo", static_cast<int>(filterAlgorithm));
+  }
+  void setSwitchTimeSecs(double secs){
+    setParam("switching_time", secs);
+  }
+  void apply(ros::NodeHandle & nh) const{
+    for(auto && op: operations){
+      op.second(nh, op.first);
+    }
+  }
+ private:
+  template <typename T>
+  void setParam(const std::string & name, T value){
+    operations.emplace(name, [value](ros::NodeHandle & nh, const std::string & name){
+      if(!nh.hasParam(name)){
+        ROS_INFO("Setting device time translator parameter '%s' to %s (in %s).", name.c_str(), std::to_string(value).c_str(), nh.getNamespace().c_str());
+        nh.setParam(name, value);
+      } else {
+        T currentValue;
+        nh.getParam(name, currentValue);
+        ROS_INFO("NOT setting device time translator parameter '%s' to %s, because it is already set to %s.", name.c_str(), std::to_string(value).c_str(), std::to_string(currentValue).c_str());
+      }
+    });
+  }
+  std::map<std::string, std::function<void(ros::NodeHandle & nh, const std::string & name)>> operations;
+};
+
+Defaults::Defaults() :
+  pImpl_(new Impl()){
+
+}
+Defaults::~Defaults()
+{
+  delete pImpl_;
+}
+
+Defaults & Defaults::setFilterAlgorithm(FilterAlgorithm filterAlgorithm) {
+  pImpl_->setFilterAlgorithm(filterAlgorithm);
+  return *this;
+}
+
+Defaults & Defaults::setSwitchTimeSecs(double secs) {
+  pImpl_->setSwitchTimeSecs(secs);
+  return *this;
+}
+
+const Defaults::Impl& Defaults::getImpl() const {
+  return *pImpl_;
+}
+
 class DeviceTimeTranslator::Impl {
  public:
-  Impl(const std::string & nameSpace) : timeTranslator_(NULL), nh_(nameSpace), srv_(nh_)
+  Impl(const std::string & nameSpace, const Defaults & defaults) : timeTranslator_(NULL), nh_(nameSpace), srv_((defaults.getImpl().apply(nh_), nh_))
   {
   }
 
@@ -173,8 +227,8 @@ void DeviceTimeTranslator::configCallback(DeviceTimeTranslatorConfig &config, ui
   pImpl_->setExpectedSwitchingTimeSeconds(config.switch_time);
 }
 
-DeviceTimeTranslator::DeviceTimeTranslator(const NS & nameSpace) :
-    pImpl_(new Impl(nameSpace))
+DeviceTimeTranslator::DeviceTimeTranslator(const NS & nameSpace, const Defaults & defaults) :
+    pImpl_(new Impl(nameSpace, defaults))
 {
   ROS_INFO("DeviceTimeTranslator is going to publishing device timestamps on %s.", pImpl_->getNh().getNamespace().c_str());
   pImpl_->getDeviceTimePub() = pImpl_->getNh().advertise<DeviceTimestamp>("", 5);
@@ -236,9 +290,9 @@ ros::Time DeviceTimeTranslator::translate(const TimestampUnwrapper & timestampUn
 }
 
 template <typename Unwrapper>
-DeviceTimeUnwrapperAndTranslator<Unwrapper>::DeviceTimeUnwrapperAndTranslator(const UnwrapperClockParameters & clockParameters, const NS & nameSpace) :
+DeviceTimeUnwrapperAndTranslator<Unwrapper>::DeviceTimeUnwrapperAndTranslator(const UnwrapperClockParameters & clockParameters, const NS & nameSpace, const Defaults & defaults) :
     timestampUnwrapper(clockParameters),
-    translator(nameSpace)
+    translator(nameSpace, defaults)
 {
 }
 
@@ -267,8 +321,8 @@ UnwrappedStamp DeviceTimeUnwrapperAndTranslator<Unwrapper>::unwrapEventStamp(typ
 }
 
 template<typename Unwrapper_>
-DeviceTimeUnwrapperAndTranslatorWithTransmitTime<Unwrapper_>::DeviceTimeUnwrapperAndTranslatorWithTransmitTime(const UnwrapperClockParameters& clockParameters, const NS& nameSpace) :
-  DeviceTimeUnwrapperAndTranslator<Unwrapper_>(clockParameters, nameSpace)
+DeviceTimeUnwrapperAndTranslatorWithTransmitTime<Unwrapper_>::DeviceTimeUnwrapperAndTranslatorWithTransmitTime(const UnwrapperClockParameters& clockParameters, const NS& nameSpace, const Defaults & defaults) :
+  DeviceTimeUnwrapperAndTranslator<Unwrapper_>(clockParameters, nameSpace, defaults)
 {
 }
 

@@ -22,6 +22,8 @@ struct FilterAlgorithm {
   FilterAlgorithm(Type t) : type(t) {}
   bool operator == (const FilterAlgorithm & other) { return type == other.type; }
   bool operator != (const FilterAlgorithm & other) { return type != other.type; }
+  // TODO (c++11) make explicit
+  operator unsigned () const { return static_cast<unsigned>(type); }
 };
 
 class NS {
@@ -50,9 +52,27 @@ class NS {
   std::string nameSpace_;
 };
 
+
+class Defaults {
+ public:
+  Defaults();
+  ~Defaults();
+  Defaults & setFilterAlgorithm(FilterAlgorithm filterAlgorithm);
+  Defaults & setSwitchTimeSecs(double secs);
+ private:
+  class Impl;
+  const Impl & getImpl() const;
+  friend class DeviceTimeTranslator;
+  Impl * const pImpl_;
+};
+
 class DeviceTimeTranslator {
  public:
-  DeviceTimeTranslator(const NS & nameSpace);
+  /**
+   * @param nameSpace used for topics and parameters
+   * @param defaults defaults for the configuration parameters (filter_algo, switching_time)
+   */
+  DeviceTimeTranslator(const NS & nameSpace, const Defaults & defaults);
 
   ~DeviceTimeTranslator();
 
@@ -76,7 +96,12 @@ class DeviceTimeUnwrapperAndTranslator {
   typedef typename Unwrapper::Timestamp Timestamp;
   typedef typename Unwrapper_::UnwrapperClockParameters UnwrapperClockParameters;
 
-  DeviceTimeUnwrapperAndTranslator(const UnwrapperClockParameters & clockParameters, const NS & nameSpace);
+  /**
+   * @param clockParameters parameters for the Unwrapper_
+   * @param nameSpace namespace used for topics and parameters
+   * @param defaults defaults used in the DeviceTimeTranslator
+   */
+  DeviceTimeUnwrapperAndTranslator(const UnwrapperClockParameters & clockParameters, const NS & nameSpace, const Defaults & defaults = Defaults());
 
   ros::Time update(Timestamp eventStamp, const ros::Time & receiveTime, double offset = 0.0);
 
@@ -113,7 +138,7 @@ class DeviceTimeUnwrapperAndTranslatorWithTransmitTime : public DeviceTimeUnwrap
   typedef typename Unwrapper_::UnwrapperClockParameters UnwrapperClockParameters;
 
   //TODO (c++11) inherit constructor
-  DeviceTimeUnwrapperAndTranslatorWithTransmitTime(const UnwrapperClockParameters & clockParameters, const NS & nameSpace);
+  DeviceTimeUnwrapperAndTranslatorWithTransmitTime(const UnwrapperClockParameters & clockParameters, const NS & nameSpace, const Defaults & defaults = Defaults());
 
   ros::Time update(Timestamp eventStamp, Timestamp transmitStamp, const ros::Time & receiveTime, double offset = 0.0);
   UnwrappedStamp unwrapTransmitStamp(Timestamp eventStamp);
@@ -121,14 +146,14 @@ class DeviceTimeUnwrapperAndTranslatorWithTransmitTime : public DeviceTimeUnwrap
 
 class DefaultDeviceTimeUnwrapperAndTranslator : public DeviceTimeUnwrapperAndTranslator<> {
  public:
-  DefaultDeviceTimeUnwrapperAndTranslator(const WrappingClockParameters & wrappingClockParameters, const NS & nameSpace) :
-    DeviceTimeUnwrapperAndTranslator<>(wrappingClockParameters, nameSpace) {}
+  DefaultDeviceTimeUnwrapperAndTranslator(const WrappingClockParameters & wrappingClockParameters, const NS & nameSpace, const Defaults & defaults = Defaults()) :
+    DeviceTimeUnwrapperAndTranslator<>(wrappingClockParameters, nameSpace, defaults) {}
 };
 
 class UnwrappedDeviceTimeTranslator : public DeviceTimeUnwrapperAndTranslator<TimestampPassThrough> {
  public:
-  UnwrappedDeviceTimeTranslator(ClockParameters clockParameters, const NS & nameSpace) :
-    DeviceTimeUnwrapperAndTranslator<TimestampPassThrough>(clockParameters, nameSpace) {}
+  UnwrappedDeviceTimeTranslator(ClockParameters clockParameters, const NS & nameSpace, const Defaults & defaults = Defaults()) :
+    DeviceTimeUnwrapperAndTranslator<TimestampPassThrough>(clockParameters, nameSpace, defaults) {}
 
   ros::Time translate(TimestampPassThrough::Timestamp timestamp) const {
     return DeviceTimeUnwrapperAndTranslator<TimestampPassThrough>::translate(this->timestampUnwrapper.toUnwrapped(timestamp));
