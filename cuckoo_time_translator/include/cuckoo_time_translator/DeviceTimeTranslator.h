@@ -58,6 +58,7 @@ class DeviceTimeTranslator {
 
   ros::Time update(const TimestampUnwrapper & timestampUnwrapper, const ros::Time & receiveTime, double offset = 0);
   ros::Time translate(const TimestampUnwrapper & timestampUnwrapper, UnwrappedStamp unwrappedEventStamp) const;
+  bool isReadyToTranslate() const;
 
   FilterAlgorithm getCurrentFilterAlgorithm() const;
   void setFilterAlgorithm(FilterAlgorithm filterAlgorithm);
@@ -93,7 +94,8 @@ class DeviceTimeUnwrapperAndTranslator {
   UnwrappedStamp unwrapEventStamp(Timestamp eventStamp);
 
   ros::Time translate(UnwrappedStamp unwrappedStamp) const;
-
+  bool isReadyToTranslate() const;
+  
   FilterAlgorithm getCurrentFilterAlgorithm() const {
     return translator.getCurrentFilterAlgorithm();
   }
