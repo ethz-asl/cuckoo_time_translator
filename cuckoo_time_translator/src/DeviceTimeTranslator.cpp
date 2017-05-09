@@ -205,6 +205,10 @@ ros::Time DeviceTimeTranslator::translate(const TimestampUnwrapper & timestampUn
   return ros::Time(pImpl_->getTimeTranslator().translateToLocalTimestamp(RemoteTime(timestampUnwrapper.stampToSec(unwrappedEventStamp))));
 }
 
+bool DeviceTimeTranslator::isReadyToTranslate() const{
+  return pImpl_->getTimeTranslator().isReady();
+}
+
 template <typename Unwrapper>
 DeviceTimeUnwrapperAndTranslator<Unwrapper>::DeviceTimeUnwrapperAndTranslator(const UnwrapperClockParameters & clockParameters, const std::string & nameSpace) :
     timestampUnwrapper(clockParameters),
@@ -228,6 +232,11 @@ ros::Time DeviceTimeUnwrapperAndTranslatorWithTransmitTime<Unwrapper>::update(Ti
 template <typename Unwrapper>
 ros::Time DeviceTimeUnwrapperAndTranslator<Unwrapper>::translate(UnwrappedStamp unwrappedStamp) const {
   return translator.translate(timestampUnwrapper, unwrappedStamp);
+}
+
+template <typename Unwrapper>
+bool DeviceTimeUnwrapperAndTranslator<Unwrapper>::isReadyToTranslate() const {
+  return translator.isReadyToTranslate();
 }
 
 template <typename Unwrapper>
