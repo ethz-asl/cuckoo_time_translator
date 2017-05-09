@@ -36,7 +36,7 @@ class DeviceTimeTranslator {
   ros::Time translate(const TimestampUnwrapper & timestampUnwrapper, UnwrappedStamp unwrappedEventStamp) const;
 
   FilterAlgorithm getCurrentFilterAlgorithm() const;
-  void setFilterAlgorithm(FilterAlgorithm filterAlgorithm) const;
+  void setFilterAlgorithm(FilterAlgorithm filterAlgorithm);
 
  private:
   void configCallback(DeviceTimeTranslatorConfig &config, uint32_t level);
@@ -70,7 +70,10 @@ class DeviceTimeUnwrapperAndTranslator {
 
   ros::Time translate(UnwrappedStamp unwrappedStamp) const;
 
-  void setFilterAlgorithm(FilterAlgorithm filterAlgorithm) const {
+  FilterAlgorithm getCurrentFilterAlgorithm() const {
+    return translator.getCurrentFilterAlgorithm();
+  }
+  void setFilterAlgorithm(FilterAlgorithm filterAlgorithm) {
     translator.setFilterAlgorithm(filterAlgorithm);
   }
  protected:

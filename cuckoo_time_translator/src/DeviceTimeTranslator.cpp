@@ -9,7 +9,11 @@
 #include <cuckoo_time_translator/ConvexHullOwt.h>
 #include <cuckoo_time_translator/SwitchingOwt.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <cuckoo_time_translator/DeviceTimeTranslatorConfig.h>
+#pragma GCC diagnostic pop
+
 #include <cuckoo_time_translator/DeviceTimestamp.h>
 #include <cuckoo_time_translator/DeviceTimeTranslator.h>
 #include <cuckoo_time_translator/KalmanOwt.h>
@@ -160,7 +164,7 @@ FilterAlgorithm DeviceTimeTranslator::getCurrentFilterAlgorithm() const {
 }
 
 
-void DeviceTimeTranslator::setFilterAlgorithm(FilterAlgorithm filterAlgorithm) const {
+void DeviceTimeTranslator::setFilterAlgorithm(FilterAlgorithm filterAlgorithm) {
   pImpl_->setExpectedAlgo(filterAlgorithm);
 }
 
