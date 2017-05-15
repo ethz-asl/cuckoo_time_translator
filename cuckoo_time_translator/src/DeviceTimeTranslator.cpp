@@ -1,3 +1,7 @@
+#include <cuckoo_time_translator/DeviceTimeTranslator.h>
+
+#include <cinttypes>
+
 #include <boost/bind/bind.hpp>
 
 #include <ros/node_handle.h>
@@ -8,14 +12,11 @@
 #include <cuckoo_time_translator/OneWayTranslator.h>
 #include <cuckoo_time_translator/ConvexHullOwt.h>
 #include <cuckoo_time_translator/SwitchingOwt.h>
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <cuckoo_time_translator/DeviceTimeTranslatorConfig.h>
 #pragma GCC diagnostic pop
-
 #include <cuckoo_time_translator/DeviceTimestamp.h>
-#include <cuckoo_time_translator/DeviceTimeTranslator.h>
 #include <cuckoo_time_translator/KalmanOwt.h>
 
 namespace cuckoo_time_translator {
@@ -281,7 +282,7 @@ ros::Time DeviceTimeTranslator::update(const TimestampUnwrapper & timestampUnwra
     msg.filter_algorithm = uint8_t(pImpl_->getCurrentAlgo().type);
     pImpl_->getDeviceTimePub().publish(msg);
   }
-  ROS_DEBUG("Device time %llu + receive time %10.6f sec mapped to %10.6f sec (receive - translated = %.3f ms).", static_cast<long long unsigned>(timestampUnwrapper.getUnwrappedEventStamp().getValue()), receiveTime.toSec(), translatedTime, (receiveTime.toSec() - translatedTime) * 1000);
+  ROS_DEBUG("Device time %" PRIu64 " + receive time %10.6f sec mapped to %10.6f sec (receive - translated = %.3f ms).", timestampUnwrapper.getUnwrappedEventStamp().getValue(), receiveTime.toSec(), translatedTime, (receiveTime.toSec() - translatedTime) * 1000);
   return msg.header.stamp;
 }
 
