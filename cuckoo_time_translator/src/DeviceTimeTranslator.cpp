@@ -4,10 +4,13 @@
 
 #include <boost/bind/bind.hpp>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <ros/node_handle.h>
 #include <ros/publisher.h>
 #include <ros/this_node.h>
 #include <dynamic_reconfigure/server.h>
+#pragma GCC diagnostic pop
 
 #include <cuckoo_time_translator/OneWayTranslator.h>
 #include <cuckoo_time_translator/ConvexHullOwt.h>
@@ -15,8 +18,8 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <cuckoo_time_translator/DeviceTimeTranslatorConfig.h>
-#pragma GCC diagnostic pop
 #include <cuckoo_time_translator/DeviceTimestamp.h>
+#pragma GCC diagnostic pop
 #include <cuckoo_time_translator/KalmanOwt.h>
 
 namespace cuckoo_time_translator {
