@@ -1,7 +1,10 @@
 #ifndef HA5447364_688E_4FF7_85A5_F1840F5D245F
 #define HA5447364_688E_4FF7_85A5_F1840F5D245F
 
-#include "ros/ros.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#include "ros/time.h"
+#pragma GCC diagnostic pop
 
 namespace cuckoo_time_translator {
 

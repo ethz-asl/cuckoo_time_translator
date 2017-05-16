@@ -1,9 +1,12 @@
 #ifndef HAD8B0C21_4B6C_4EED_92B0_B8653420AD87
 #define HAD8B0C21_4B6C_4EED_92B0_B8653420AD87
 
-#include <stdint.h>
+#include <cstdint>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <ros/common.h>
+#pragma GCC diagnostic pop
 
 #include <cuckoo_time_translator/TimestampUnwrapper.h>
 
