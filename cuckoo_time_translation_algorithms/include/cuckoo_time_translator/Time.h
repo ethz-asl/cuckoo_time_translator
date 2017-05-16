@@ -9,6 +9,10 @@ class TaggedTime {
   explicit TaggedTime(double v) : value(v) {}
   operator double () const { return value; }
 
+  bool operator == (const TaggedTime& other) const { return value == other.value; }
+  bool operator != (const TaggedTime& other) const { return value != other.value; }
+
+ private:
   double value;
 };
 
