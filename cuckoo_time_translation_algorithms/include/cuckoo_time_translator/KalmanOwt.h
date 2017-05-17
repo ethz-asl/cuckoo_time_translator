@@ -39,6 +39,8 @@ class KalmanOwt : public OneWayTranslator
   void setConfig(const Config& config) {
     this->config = config;
   }
+ protected:
+  virtual KalmanOwt* cloneImpl() const override;
  private:
   void initialize(double device_time, double localTimeSecs);
 

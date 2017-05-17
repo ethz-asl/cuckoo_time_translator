@@ -101,4 +101,8 @@ void KalmanOwt::initialize(const double device_time, const double localTimeSecs)
   isInitialized_ = true;
 }
 
+KalmanOwt* KalmanOwt::cloneImpl() const {
+  return new KalmanOwt(*this);
+}
+
 }
