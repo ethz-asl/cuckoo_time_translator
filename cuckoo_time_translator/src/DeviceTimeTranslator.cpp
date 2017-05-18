@@ -237,6 +237,10 @@ DeviceTimeTranslator::DeviceTimeTranslator(const NS & nameSpace, const Defaults 
   ROS_INFO("DeviceTimeTranslator is going to publishing device timestamps on %s.", pImpl_->getNh().getNamespace().c_str());
   pImpl_->getDeviceTimePub() = pImpl_->getNh().advertise<DeviceTimestamp>("", 5);
   pImpl_->getConfigSrv().setCallback(boost::bind(&DeviceTimeTranslator::configCallback, this, _1, _2));
+
+  if(pImpl_->getExpectedAlgo() == FilterAlgorithm::None){
+    ROS_WARN("Current %s/filterAlgo setting (=None ~ %u) causes the sensor's hardware clock to be ignore. Instead the receive time in the driver is used as timestamp.", nameSpace.toString().c_str(), unsigned(FilterAlgorithm::None));
+  }
 }
 
 DeviceTimeTranslator::~DeviceTimeTranslator() {
