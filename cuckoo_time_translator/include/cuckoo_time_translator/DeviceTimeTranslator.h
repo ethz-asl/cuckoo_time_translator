@@ -1,7 +1,8 @@
 #ifndef HAD8B0C21_4B6C_4EED_92B0_B8653420AD87
 #define HAD8B0C21_4B6C_4EED_92B0_B8653420AD87
 
-#include <cstdint>
+//TODO (c++11) use cstdint
+#include <stdint.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
