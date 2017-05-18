@@ -2,11 +2,11 @@
 #define H3A613172_9ECF_45BC_8D47_C711DE333A50
 
 #include <iosfwd>
+#include <memory>
 
 #include "Time.h"
+
 namespace cuckoo_time_translator {
-
-
 
 class OneWayTranslator {
  public:
@@ -35,6 +35,10 @@ class OneWayTranslator {
   virtual void printNameAndConfig(std::ostream & o) const = 0;
   virtual void printState(std::ostream & o) const = 0;
   virtual void reset() = 0;
+
+  std::unique_ptr<OneWayTranslator> clone() const;
+ protected:
+  virtual OneWayTranslator* cloneImpl() const = 0;
 };
 
 /**
@@ -50,6 +54,8 @@ class NopOwt : public OneWayTranslator {
   virtual void printNameAndConfig(std::ostream & o) const override;
   virtual void printState(std::ostream & o) const override;
   virtual void reset() override;
+ protected:
+  virtual NopOwt* cloneImpl() const override;
 };
 
 } /* namespace cuckoo_time_translator */

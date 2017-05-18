@@ -11,8 +11,10 @@ namespace cuckoo_time_translator {
 
 class SwitchingOwt : public OneWayTranslator {
  public:
+  SwitchingOwt(double switchingTimeSeconds, const OneWayTranslator & blueprint);
   SwitchingOwt(double switchingTimeSeconds, std::function<std::unique_ptr<OneWayTranslator>()> owtFactory);
 
+  SwitchingOwt(const SwitchingOwt & other);
   SwitchingOwt(SwitchingOwt &&) = default;
 
   template <typename Owt>
@@ -50,6 +52,8 @@ class SwitchingOwt : public OneWayTranslator {
   OneWayTranslator & getCurrentOwt();
   OneWayTranslator & getPendingOwt();
 
+ protected:
+  virtual SwitchingOwt* cloneImpl() const override;
  private:
   double switchingTimeSeconds_, lastSwitchTime_ = -1;
   uint32_t switchCount_ = 0;
