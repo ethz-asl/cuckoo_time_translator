@@ -1,6 +1,9 @@
 #include <cuckoo_time_translator/KalmanOwt.h>
-#include <stdexcept>
+
 #include <iostream>
+#include <stdexcept>
+
+#include <console_bridge/console.h>
 
 namespace cuckoo_time_translator {
 
@@ -34,6 +37,8 @@ void KalmanOwt::printNameAndConfig(std::ostream & out) const {
       << "sigmaInitSkew=" << config.sigmaInitSkew
       << ", "
       << "sigmaInitOffset=" << config.sigmaInitOffset
+      << ", "
+      << "outlierThreshold=" << config.outlierThreshold
       << ")";
 }
 void KalmanOwt::printState(std::ostream & out) const {
@@ -60,6 +65,7 @@ LocalTime KalmanOwt::updateAndTranslateToLocalTimestamp(const RemoteTime remoteT
     // Prediction
     x_ = F * x_;
     P_ = F * P_ * F.transpose() + dt_ * Q_;
+    lastUpdateDeviceTime_ = remoteTimeTics;
 
     // Update
     const double S = H_ * P_ * H_.transpose() + R_;
@@ -67,12 +73,16 @@ LocalTime KalmanOwt::updateAndTranslateToLocalTimestamp(const RemoteTime remoteT
     Eigen::Vector2d K;
     K = P_ * H_.transpose() * (1 / S);
 
-    const double measurement_residual = localTimeSecs - remoteTimeTics - H_ * x_;
+    const double measurementResidual = localTimeSecs - remoteTimeTics - H_ * x_;
 
-    x_ = x_ + K * measurement_residual;
-    P_ = (Eigen::Matrix2d::Identity() - K * H_) * P_;
+    const double mahalDistance = sqrt(measurementResidual*measurementResidual*(1.0/S));
 
-    lastUpdateDeviceTime_ = remoteTimeTics;
+    if(mahalDistance > config.outlierThreshold){
+      logWarn("KalmanOwt: local_time=%g, remote_time=%g -> measurement_residual=%g, mahal_distance=%g!", localTimeSecs, remoteTimeTics, measurementResidual, mahalDistance);
+    } else {
+      x_ = x_ + K * measurementResidual;
+      P_ = (Eigen::Matrix2d::Identity() - K * H_) * P_;
+    }
   }
   return translateToLocalTimestamp(remoteTimeTics);
 }

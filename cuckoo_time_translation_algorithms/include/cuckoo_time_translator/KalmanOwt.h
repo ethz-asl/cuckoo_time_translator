@@ -19,6 +19,7 @@ class KalmanOwt : public OneWayTranslator
     double sigmaOffset = 2e-3;
     double sigmaSkew = 2e-6;
     double updateRate = 0.5;
+    double outlierThreshold = 1.0;
   };
 
   KalmanOwt();
