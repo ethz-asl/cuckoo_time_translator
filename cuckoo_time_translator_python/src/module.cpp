@@ -9,6 +9,13 @@
 using namespace boost::python;
 using namespace cuckoo_time_translator;
 
+template < void (OneWayTranslator::* Method) (std::ostream & o) const>
+std::string getString(const OneWayTranslator * owt){
+  std::stringstream ss;
+  (owt->*Method)(ss);
+  return ss.str();
+}
+
 void exportTimestampOwts()
 {
   class_<TaggedTime>("LocalTime", init<double>())
@@ -27,6 +34,8 @@ void exportTimestampOwts()
     .def("isReady", &OneWayTranslator::isReady, "bool isReady() const")
     .def("translateToLocalTimestamp", &OneWayTranslator::translateToLocalTimestamp, "LocalTime translateToLocalTimestamp(RemoteTime remoteTimeTics) const")
     .def("updateAndTranslateToLocalTimestamp", &OneWayTranslator::updateAndTranslateToLocalTimestamp, "LocalTimestamp updateAndTranslateToLocalTimestamp(RemoteTime remoteTimeTics, LocalTime localTimeSecs)")
+    .def("getNameAndConfigString", &getString<&OneWayTranslator::printNameAndConfig>, "std::string getNameAndConfig() const")
+    .def("getStateString", &getString<&OneWayTranslator::printState>, "std::string getStateString() const")
     ;
 
   class_<ConvexHullOwt, bases<OneWayTranslator>>("ConvexHullOwt", init<>())
@@ -35,7 +44,18 @@ void exportTimestampOwts()
     .def("getStackSize", &ConvexHullOwt::getStackSize, "size_t getStackSize() const")
     ;
 
+  class_<KalmanOwt::Config>("KalmanOwtConfig", init<>())
+    .def_readwrite("sigmaInitOffset", &KalmanOwt::Config::sigmaInitOffset)
+    .def_readwrite("sigmaInitSkew", &KalmanOwt::Config::sigmaInitSkew)
+    .def_readwrite("sigmaOffset", &KalmanOwt::Config::sigmaOffset)
+    .def_readwrite("sigmaSkew", &KalmanOwt::Config::sigmaSkew)
+    .def_readwrite("updateRate", &KalmanOwt::Config::updateRate)
+    .def_readwrite("outlierThreshold", &KalmanOwt::Config::outlierThreshold)
+  ;
+
   class_<KalmanOwt, bases<OneWayTranslator>>("KalmanOwt", init<>())
+    .def("getConfig", &KalmanOwt::getConfig, "const Config& getConfig() const", return_value_policy<boost::python:: copy_const_reference>())
+    .def("setConfig", &KalmanOwt::setConfig, "void setConfig(const Config& config)")
     ;
 
   class_<SwitchingOwt, bases<OneWayTranslator>, boost::noncopyable>("SwitchingOwt", init<double, const OneWayTranslator &>())
