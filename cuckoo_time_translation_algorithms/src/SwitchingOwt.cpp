@@ -9,6 +9,19 @@ namespace cuckoo_time_translator {
 SwitchingOwt::~SwitchingOwt() {
 }
 
+SwitchingOwt::SwitchingOwt(const SwitchingOwt& other) :
+      switchingTimeSeconds_{other.switchingTimeSeconds_},
+      lastSwitchTime_{other.lastSwitchTime_},
+      switchCount_{other.switchCount_},
+      oneWayTranslators_{{other.oneWayTranslators_[0]->clone(), other.oneWayTranslators_[1]->clone()}}
+{
+}
+
+SwitchingOwt::SwitchingOwt(const double switchingTimeSeconds, const OneWayTranslator & blueprint) :
+  SwitchingOwt(switchingTimeSeconds, [&]() { return blueprint.clone();})
+{
+}
+
 SwitchingOwt::SwitchingOwt(double switchingTimeSeconds, std::function<std::unique_ptr<OneWayTranslator>()> owtFactory) :
   switchingTimeSeconds_(switchingTimeSeconds)
 {
@@ -76,6 +89,10 @@ void SwitchingOwt::switchOwts() {
   switchCount_ ++;
   getCurrentOwt().reset();
   std::swap(oneWayTranslators_[0], oneWayTranslators_[1]);
+}
+
+SwitchingOwt* SwitchingOwt::cloneImpl() const {
+  return new SwitchingOwt(*this);
 }
 
 } /* namespace cuckoo_time_translator */

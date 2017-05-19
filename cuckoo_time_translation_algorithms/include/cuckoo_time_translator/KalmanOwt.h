@@ -1,7 +1,10 @@
 #ifndef HF8B63F63_F998_436E_92A5_21AB87EE5FC0
 #define HF8B63F63_F998_436E_92A5_21AB87EE5FC0
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-register"
 #include <Eigen/Dense>
+#pragma clang diagnostic pop
 
 #include "OneWayTranslator.h"
 
@@ -37,6 +40,8 @@ class KalmanOwt : public OneWayTranslator
   void setConfig(const Config& config) {
     this->config = config;
   }
+ protected:
+  virtual KalmanOwt* cloneImpl() const override;
  private:
   void initialize(double device_time, double localTimeSecs);
 

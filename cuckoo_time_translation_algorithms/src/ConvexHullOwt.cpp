@@ -42,5 +42,9 @@ size_t cuckoo_time_translator::ConvexHullOwt::getStackSize() const {
   return impl.convexHullSize();
 }
 
+ConvexHullOwt* ConvexHullOwt::cloneImpl() const {
+  return new ConvexHullOwt(*this);
+}
+
 }
 

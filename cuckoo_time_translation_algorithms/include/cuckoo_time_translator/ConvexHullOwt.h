@@ -157,6 +157,7 @@ class ConvexHullOwt : public OneWayTranslator {
   size_t getStackSize() const;
  private:
   ConvexHullOwtT<double> impl;
+  virtual ConvexHullOwt* cloneImpl() const override;
 };
 extern template class ConvexHullOwtT<double>;
 

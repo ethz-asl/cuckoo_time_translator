@@ -1,21 +1,25 @@
+#include <cuckoo_time_translator/DeviceTimeTranslator.h>
+
+#include <cinttypes>
+
 #include <boost/bind/bind.hpp>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <ros/node_handle.h>
 #include <ros/publisher.h>
 #include <ros/this_node.h>
 #include <dynamic_reconfigure/server.h>
+#pragma GCC diagnostic pop
 
 #include <cuckoo_time_translator/OneWayTranslator.h>
 #include <cuckoo_time_translator/ConvexHullOwt.h>
 #include <cuckoo_time_translator/SwitchingOwt.h>
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <cuckoo_time_translator/DeviceTimeTranslatorConfig.h>
-#pragma GCC diagnostic pop
-
 #include <cuckoo_time_translator/DeviceTimestamp.h>
-#include <cuckoo_time_translator/DeviceTimeTranslator.h>
+#pragma GCC diagnostic pop
 #include <cuckoo_time_translator/KalmanOwt.h>
 
 namespace cuckoo_time_translator {
@@ -233,6 +237,10 @@ DeviceTimeTranslator::DeviceTimeTranslator(const NS & nameSpace, const Defaults 
   ROS_INFO("DeviceTimeTranslator is going to publishing device timestamps on %s.", pImpl_->getNh().getNamespace().c_str());
   pImpl_->getDeviceTimePub() = pImpl_->getNh().advertise<DeviceTimestamp>("", 5);
   pImpl_->getConfigSrv().setCallback(boost::bind(&DeviceTimeTranslator::configCallback, this, _1, _2));
+
+  if(pImpl_->getExpectedAlgo() == FilterAlgorithm::None){
+    ROS_WARN("Current %s/filterAlgo setting (=None ~ %u) causes the sensor's hardware clock to be ignore. Instead the receive time in the driver is used as timestamp.", nameSpace.toString().c_str(), unsigned(FilterAlgorithm::None));
+  }
 }
 
 DeviceTimeTranslator::~DeviceTimeTranslator() {
@@ -281,7 +289,7 @@ ros::Time DeviceTimeTranslator::update(const TimestampUnwrapper & timestampUnwra
     msg.filter_algorithm = uint8_t(pImpl_->getCurrentAlgo().type);
     pImpl_->getDeviceTimePub().publish(msg);
   }
-  ROS_DEBUG("Device time %llu + receive time %10.6f sec mapped to %10.6f sec (receive - translated = %.3f ms).", static_cast<long long unsigned>(timestampUnwrapper.getUnwrappedEventStamp().getValue()), receiveTime.toSec(), translatedTime, (receiveTime.toSec() - translatedTime) * 1000);
+  ROS_DEBUG("Device time %" PRIu64 " + receive time %10.6f sec mapped to %10.6f sec (receive - translated = %.3f ms).", timestampUnwrapper.getUnwrappedEventStamp().getValue(), receiveTime.toSec(), translatedTime, (receiveTime.toSec() - translatedTime) * 1000);
   return msg.header.stamp;
 }
 

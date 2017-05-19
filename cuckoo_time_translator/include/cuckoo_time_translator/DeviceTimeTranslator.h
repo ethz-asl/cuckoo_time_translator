@@ -1,9 +1,13 @@
 #ifndef HAD8B0C21_4B6C_4EED_92B0_B8653420AD87
 #define HAD8B0C21_4B6C_4EED_92B0_B8653420AD87
 
+//TODO (c++11) use cstdint
 #include <stdint.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <ros/common.h>
+#pragma GCC diagnostic pop
 
 #include <cuckoo_time_translator/TimestampUnwrapper.h>
 
@@ -20,8 +24,9 @@ struct FilterAlgorithm {
   } type;
 
   FilterAlgorithm(Type t) : type(t) {}
-  bool operator == (const FilterAlgorithm & other) { return type == other.type; }
-  bool operator != (const FilterAlgorithm & other) { return type != other.type; }
+  bool operator == (const Type & other) { return type == other; }
+  bool operator != (const Type & other) { return type != other; }
+  operator Type () const { return type; }
   // TODO (c++11) make explicit
   operator unsigned () const { return static_cast<unsigned>(type); }
 };
@@ -47,7 +52,8 @@ class NS {
   NS(const std::string & nameSpace, const std::string & subNameSpace);
   NS(const char* nameSpace, const char* subNameSpace);
 
-  operator const std::string & () const { return nameSpace_; }
+  const std::string & toString() const { return nameSpace_; }
+  operator const std::string & () const { return toString(); }
  private:
   std::string nameSpace_;
 };

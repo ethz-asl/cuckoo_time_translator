@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>cuckoo_time_translator_python</name>
+  <version>0.0.0</version>
+  <description>cuckoo_time_translator_python</description>
+
+  <author email="hannes.sommer@mavt.ethz.ch">Hannes Sommer</author>
+  <maintainer email="hannes.sommer@mavt.ethz.ch">Hannes Sommer</maintainer>
+  <license>New BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <depend>rospy</depend>
+  <build_depend>python_module</build_depend>
+  <depend>cuckoo_time_translation_algorithms</depend>
+</package>

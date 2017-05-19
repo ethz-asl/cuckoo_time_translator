@@ -12,6 +12,10 @@ double TimePair::update(OneWayTranslator & owt) const {
 OneWayTranslator::~OneWayTranslator() {
 }
 
+std::unique_ptr<OneWayTranslator> OneWayTranslator::clone() const {
+  return std::unique_ptr<OneWayTranslator>(cloneImpl());
+}
+
 NopOwt::~NopOwt() {
 }
 
@@ -36,4 +40,9 @@ void NopOwt::printState(std::ostream& /*o*/) const {
 
 void NopOwt::reset() {
 }
+
+NopOwt* NopOwt::cloneImpl() const {
+  return new NopOwt();
+}
+
 } /* namespace cuckoo_time_translator */

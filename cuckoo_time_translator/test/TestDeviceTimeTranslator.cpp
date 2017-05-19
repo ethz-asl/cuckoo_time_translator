@@ -3,12 +3,13 @@
 
 #include <gtest/gtest.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <cuckoo_time_translator/DeviceTimestamp.h>
 #include <ros/node_handle.h>
+#pragma GCC diagnostic pop
 
 using namespace cuckoo_time_translator;
-
-
 
 TEST(DeviceTimeTranslator, DefaultDeviceTimeUnwrapperAndTranslator) {
   DefaultDeviceTimeUnwrapperAndTranslator translator({1000ul, 10.0}, "");
