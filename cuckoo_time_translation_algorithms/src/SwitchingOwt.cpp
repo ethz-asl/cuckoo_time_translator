@@ -60,8 +60,8 @@ LocalTime SwitchingOwt::updateAndTranslateToLocalTimestamp(RemoteTime remoteTime
   return getCurrentOwt().updateAndTranslateToLocalTimestamp(remoteTimeTics, localTimeSecs);
 }
 
-bool SwitchingOwt::isReady() const {
-  return getCurrentOwt().isReady();
+bool SwitchingOwt::isReadyToTranslate() const {
+  return getCurrentOwt().isReadyToTranslate();
 }
 
 void SwitchingOwt::printNameAndConfig(std::ostream& o) const {

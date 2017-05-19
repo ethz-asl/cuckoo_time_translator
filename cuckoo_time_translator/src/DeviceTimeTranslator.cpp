@@ -266,12 +266,12 @@ ros::Time DeviceTimeTranslator::update(const TimestampUnwrapper & timestampUnwra
   auto & msg = pImpl_->getMsg();
   if(timestampUnwrapper.hasSeparateTransmitTime()){
     msg.transmit_stamp = timestampUnwrapper.getUnwrappedTransmitStamp().getValue();
-    if(timeTranslator.isReady()){
+    if(timeTranslator.isReadyToTranslate()){
       translatedTime = timeTranslator.translateToLocalTimestamp(RemoteTime(timestampUnwrapper.getEventStampSec()));
     }
   }
   float correction_secs;
-  if (timeTranslator.isReady()){
+  if (timeTranslator.isReadyToTranslate()){
     msg.header.stamp.fromSec(translatedTime);
     correction_secs = float(receiveTime.toSec() - translatedTime);
   } else {
@@ -298,7 +298,7 @@ ros::Time DeviceTimeTranslator::translate(const TimestampUnwrapper & timestampUn
 }
 
 bool DeviceTimeTranslator::isReadyToTranslate() const{
-  return pImpl_->getTimeTranslator().isReady();
+  return pImpl_->getTimeTranslator().isReadyToTranslate();
 }
 
 template <typename Unwrapper>

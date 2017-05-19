@@ -31,7 +31,7 @@ class KalmanOwt : public OneWayTranslator
   virtual void printState(std::ostream & o) const override;
   virtual void reset() override;
 
-  virtual bool isReady() const override;
+  virtual bool isReadyToTranslate() const override;
 
   const Config& getConfig() const {
     return config;

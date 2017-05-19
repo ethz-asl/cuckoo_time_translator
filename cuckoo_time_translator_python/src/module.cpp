@@ -31,7 +31,7 @@ void exportTimestampOwts()
 
   class_<OneWayTranslator, boost::noncopyable>("OneWayTranslator", no_init)
     .def("reset", &OneWayTranslator::reset, "void reset()")
-    .def("isReady", &OneWayTranslator::isReady, "bool isReady() const")
+    .def("isReady", &OneWayTranslator::isReadyToTranslate, "bool isReady() const")
     .def("translateToLocalTimestamp", &OneWayTranslator::translateToLocalTimestamp, "LocalTime translateToLocalTimestamp(RemoteTime remoteTimeTics) const")
     .def("updateAndTranslateToLocalTimestamp", &OneWayTranslator::updateAndTranslateToLocalTimestamp, "LocalTimestamp updateAndTranslateToLocalTimestamp(RemoteTime remoteTimeTics, LocalTime localTimeSecs)")
     .def("getNameAndConfigString", &getString<&OneWayTranslator::printNameAndConfig>, "std::string getNameAndConfig() const")

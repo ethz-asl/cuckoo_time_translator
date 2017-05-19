@@ -87,7 +87,7 @@ LocalTime KalmanOwt::updateAndTranslateToLocalTimestamp(const RemoteTime remoteT
   return translateToLocalTimestamp(remoteTimeTics);
 }
 
-bool KalmanOwt::isReady() const {
+bool KalmanOwt::isReadyToTranslate() const {
   return isInitialized_;
 }
 

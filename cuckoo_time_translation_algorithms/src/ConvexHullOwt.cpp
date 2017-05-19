@@ -15,7 +15,7 @@ LocalTime ConvexHullOwt::updateAndTranslateToLocalTimestamp(RemoteTime remoteTim
   return LocalTime(impl.correctTimestamp(remoteTimeTics, localTimeSecs));
 }
 
-bool ConvexHullOwt::isReady() const {
+bool ConvexHullOwt::isReadyToTranslate() const {
   return impl.convexHullSize() >= 2u;
 }
 
