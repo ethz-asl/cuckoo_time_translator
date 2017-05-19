@@ -15,10 +15,19 @@ class TimestampFilter:
       self.owt = owt
     self.batch = batch
     self.switchTime = switchTime
+    
+    self._paramNames = { "batch" : False, "switchTime" : None }
+    
     self.name = self.__class__.__name__
 
+  def _addParamNames(self, extra_names):
+    return self._paramNames.update(extra_names)
+
+  def getConfigString(self, showDefaults = False):
+    return "%s(%s)" %  (self.name, ", ".join([ "%s=%s"% (name, getattr(self, name)) for name, default in self._paramNames.items() if showDefaults or default != getattr(self, name)]))
+
   def __str__(self):
-    return "%s(batch=%d, switchTime=%s)" %  (self.name, self.batch, str(self.switchTime))
+    return self.getConfigString(False)
 
   def apply(self, hwTimes, receiveTimes):
     self.owt.reset()
@@ -43,5 +52,22 @@ class ConvexHullFilter (TimestampFilter):
       TimestampFilter.__init__(self, ctt.ConvexHullOwt(), *args, **kwargs)
 
 class KalmanFilter(TimestampFilter):
-    def __init__(self, *args, **kwargs):
-      TimestampFilter.__init__(self, ctt.KalmanOwt(), *args, **kwargs)
+    def __init__(self, outlierThreshold = None, sigmaSkew = None, *args, **kwargs):
+      k = ctt.KalmanOwt()
+      c = k.getConfig()
+      
+      extra_params = { "outlierThreshold" : c.outlierThreshold, "sigmaSkew" : c.sigmaSkew }
+
+      if outlierThreshold:
+        c.outlierThreshold = outlierThreshold
+      if sigmaSkew:
+        c.sigmaSkew = sigmaSkew
+
+      self.outlierThreshold = c.outlierThreshold
+      self.sigmaSkew = c.sigmaSkew
+
+      k.setConfig(c)
+      TimestampFilter.__init__(self, k, *args, **kwargs)
+      
+      self._addParamNames(extra_params)
+

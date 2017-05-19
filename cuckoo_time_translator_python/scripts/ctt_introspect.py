@@ -24,6 +24,7 @@ if __name__ == '__main__':
   parser.add_argument('--dontPlotPreFiltered', action='store_true', help='don\'t plot pre-filtered timestamps')
   parser.add_argument('--useAffineZoom', action='store_true', help='use an affine linear transformation to allow high resolution on the y-axis')
   parser.add_argument('--invalidate', action='store_true', help='invalidate any possibly existing cache')
+  parser.add_argument('--showDefaults', action='store_true', help='Show all parameters in the legend even if they are at their default value')
   parser.add_argument('--force', action='store_true', help='Force overwriting')
 
   args = parser.parse_args()
@@ -76,7 +77,7 @@ if __name__ == '__main__':
   
     filterColors = ['m', 'grey', 'cyan', 'k', 'orange']
     for i, filter in enumerate(hwFilters):
-        addToPlot(filter.apply(ds.raw_hw_times, ds.receive_times), str(filter), filterColors[i])
+        addToPlot(filter.apply(ds.raw_hw_times, ds.receive_times), filter.getConfigString(args.showDefaults), filterColors[i])
   
     for d, lab in zip(delaysToPlot, labels):
       printDelayStat(d, lab)
