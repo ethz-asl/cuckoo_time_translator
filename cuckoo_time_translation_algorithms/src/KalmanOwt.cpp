@@ -99,10 +99,7 @@ void KalmanOwt::initialize(const double device_time, const double localTimeSecs)
   P_(0,0) = config.sigmaInitOffset * config.sigmaInitOffset;
   P_(1,1) = config.sigmaInitSkew * config.sigmaInitSkew;
 
-  Q_.setZero();
-  Q_(1,1) = config.sigmaSkew * config.sigmaSkew;
-
-  R_ = config.sigmaOffset * config.sigmaOffset;
+  applyConfig();
 
   H_.setZero();
   H_(0,0) = 1;
@@ -110,6 +107,18 @@ void KalmanOwt::initialize(const double device_time, const double localTimeSecs)
   lastUpdateDeviceTime_ = device_time;
   isInitialized_ = true;
 }
+void KalmanOwt::applyConfig() {
+  Q_.setZero();
+  Q_(1,1) = config.sigmaSkew * config.sigmaSkew;
+
+  R_ = config.sigmaOffset * config.sigmaOffset;
+}
+
+void KalmanOwt::setConfig(const Config& config) {
+  this->config = config;
+  applyConfig();
+}
+
 
 KalmanOwt* KalmanOwt::cloneImpl() const {
   return new KalmanOwt(*this);

@@ -33,17 +33,13 @@ class KalmanOwt : public OneWayTranslator
 
   virtual bool isReadyToTranslate() const override;
 
-  const Config& getConfig() const {
-    return config;
-  }
-
-  void setConfig(const Config& config) {
-    this->config = config;
-  }
+  const Config& getConfig() const { return config; }
+  void setConfig(const Config& config);
  protected:
   virtual KalmanOwt* cloneImpl() const override;
  private:
   void initialize(double device_time, double localTimeSecs);
+  void applyConfig();
 
   Config config;
 
