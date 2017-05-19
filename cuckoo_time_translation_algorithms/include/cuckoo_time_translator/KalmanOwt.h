@@ -26,24 +26,19 @@ class KalmanOwt : public OneWayTranslator
   virtual ~KalmanOwt();
   virtual LocalTime translateToLocalTimestamp(RemoteTime device_time) const override;
   virtual LocalTime updateAndTranslateToLocalTimestamp(RemoteTime device_time, LocalTime localTimeSecs) override;
+  virtual bool isReadyToTranslate() const override;
+  virtual void reset() override;
 
   virtual void printNameAndConfig(std::ostream & o) const override;
   virtual void printState(std::ostream & o) const override;
-  virtual void reset() override;
 
-  virtual bool isReady() const override;
-
-  const Config& getConfig() const {
-    return config;
-  }
-
-  void setConfig(const Config& config) {
-    this->config = config;
-  }
+  const Config& getConfig() const { return config; }
+  void setConfig(const Config& config);
  protected:
   virtual KalmanOwt* cloneImpl() const override;
  private:
   void initialize(double device_time, double localTimeSecs);
+  void applyConfig();
 
   Config config;
 

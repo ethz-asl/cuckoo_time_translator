@@ -27,8 +27,8 @@ LocalTime NopOwt::updateAndTranslateToLocalTimestamp(RemoteTime /*remoteTimeTics
   return localTimeSecs;
 }
 
-bool NopOwt::isReady() const {
-  return false;
+bool NopOwt::isReadyToTranslate() const {
+  return true;
 }
 
 void NopOwt::printNameAndConfig(std::ostream& o) const {

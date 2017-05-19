@@ -22,7 +22,7 @@ LocalTime KalmanOwt::translateToLocalTimestamp(const RemoteTime remoteTimeTics) 
   if(!isInitialized_) {
     throw std::runtime_error("The filter not initialized yet!");
   }
-  double dt = remoteTimeTics - lastUpdateDeviceTime_;
+  const double dt = remoteTimeTics - lastUpdateDeviceTime_;
   return LocalTime(remoteTimeTics + x_(0) + dt * x_(1));
 }
 
@@ -87,7 +87,7 @@ LocalTime KalmanOwt::updateAndTranslateToLocalTimestamp(const RemoteTime remoteT
   return translateToLocalTimestamp(remoteTimeTics);
 }
 
-bool KalmanOwt::isReady() const {
+bool KalmanOwt::isReadyToTranslate() const {
   return isInitialized_;
 }
 
@@ -99,10 +99,7 @@ void KalmanOwt::initialize(const double device_time, const double localTimeSecs)
   P_(0,0) = config.sigmaInitOffset * config.sigmaInitOffset;
   P_(1,1) = config.sigmaInitSkew * config.sigmaInitSkew;
 
-  Q_.setZero();
-  Q_(1,1) = config.sigmaSkew * config.sigmaSkew;
-
-  R_ = config.sigmaOffset * config.sigmaOffset;
+  applyConfig();
 
   H_.setZero();
   H_(0,0) = 1;
@@ -110,6 +107,18 @@ void KalmanOwt::initialize(const double device_time, const double localTimeSecs)
   lastUpdateDeviceTime_ = device_time;
   isInitialized_ = true;
 }
+void KalmanOwt::applyConfig() {
+  Q_.setZero();
+  Q_(1,1) = config.sigmaSkew * config.sigmaSkew;
+
+  R_ = config.sigmaOffset * config.sigmaOffset;
+}
+
+void KalmanOwt::setConfig(const Config& config) {
+  this->config = config;
+  applyConfig();
+}
+
 
 KalmanOwt* KalmanOwt::cloneImpl() const {
   return new KalmanOwt(*this);

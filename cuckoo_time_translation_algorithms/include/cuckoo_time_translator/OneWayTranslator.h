@@ -30,11 +30,11 @@ class OneWayTranslator {
    */
   virtual LocalTime updateAndTranslateToLocalTimestamp(RemoteTime remoteTimeTics, LocalTime localTimeSecs) = 0;
 
-  virtual bool isReady() const = 0;
+  virtual bool isReadyToTranslate() const = 0;
+  virtual void reset() = 0;
 
   virtual void printNameAndConfig(std::ostream & o) const = 0;
   virtual void printState(std::ostream & o) const = 0;
-  virtual void reset() = 0;
 
   std::unique_ptr<OneWayTranslator> clone() const;
  protected:
@@ -50,10 +50,11 @@ class NopOwt : public OneWayTranslator {
   virtual ~NopOwt();
   virtual LocalTime translateToLocalTimestamp(RemoteTime remoteTimeTics) const override;
   virtual LocalTime updateAndTranslateToLocalTimestamp(RemoteTime remoteTimeTics, LocalTime localTimeSecs) override;
-  virtual bool isReady() const override;
+  virtual bool isReadyToTranslate() const override;
+  virtual void reset() override;
+
   virtual void printNameAndConfig(std::ostream & o) const override;
   virtual void printState(std::ostream & o) const override;
-  virtual void reset() override;
  protected:
   virtual NopOwt* cloneImpl() const override;
 };

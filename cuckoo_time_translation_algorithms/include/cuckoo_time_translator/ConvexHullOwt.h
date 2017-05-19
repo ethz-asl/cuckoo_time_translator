@@ -147,10 +147,11 @@ class ConvexHullOwt : public OneWayTranslator {
   virtual ~ConvexHullOwt();
   virtual LocalTime translateToLocalTimestamp(RemoteTime remoteTimeTics) const override;
   virtual LocalTime updateAndTranslateToLocalTimestamp(RemoteTime remoteTimeTics, LocalTime localTimeSecs) override;
-  virtual bool isReady() const override;
+  virtual bool isReadyToTranslate() const override;
+  virtual void reset() override;
+
   virtual void printNameAndConfig(std::ostream & o) const override;
   virtual void printState(std::ostream & o) const override;
-  virtual void reset() override;
 
   double getSkew() const;
   LocalTime getOffset() const;
