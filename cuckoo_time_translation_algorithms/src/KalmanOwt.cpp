@@ -65,6 +65,7 @@ LocalTime KalmanOwt::updateAndTranslateToLocalTimestamp(const RemoteTime remoteT
     // Prediction
     x_ = F * x_;
     P_ = F * P_ * F.transpose() + dt_ * Q_;
+    lastUpdateDeviceTime_ = remoteTimeTics;
 
     // Update
     const double S = H_ * P_ * H_.transpose() + R_;
@@ -81,8 +82,6 @@ LocalTime KalmanOwt::updateAndTranslateToLocalTimestamp(const RemoteTime remoteT
     } else {
       x_ = x_ + K * measurementResidual;
       P_ = (Eigen::Matrix2d::Identity() - K * H_) * P_;
-
-      lastUpdateDeviceTime_ = remoteTimeTics;
     }
   }
   return translateToLocalTimestamp(remoteTimeTics);
