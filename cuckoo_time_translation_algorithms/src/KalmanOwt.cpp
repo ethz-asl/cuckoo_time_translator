@@ -22,7 +22,7 @@ LocalTime KalmanOwt::translateToLocalTimestamp(const RemoteTime remoteTimeTics) 
   if(!isInitialized_) {
     throw std::runtime_error("The filter not initialized yet!");
   }
-  double dt = remoteTimeTics - lastUpdateDeviceTime_;
+  const double dt = remoteTimeTics - lastUpdateDeviceTime_;
   return LocalTime(remoteTimeTics + x_(0) + dt * x_(1));
 }
 
