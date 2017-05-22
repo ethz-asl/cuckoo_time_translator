@@ -1,11 +1,17 @@
 #include <cuckoo_time_translator/ConvexHullOwt.h>
+#include <cuckoo_time_translator/ConvexHullImpl.h>
 
 namespace cuckoo_time_translator {
 
-template class ConvexHullOwtT<double>;
+template class ConvexHull<double>;
+template class ConvexHull<std::int64_t>;
+template class ConvexHull<std::uint64_t>;
 
-ConvexHullOwt::~ConvexHullOwt() {
-}
+// defaults necessary in cpp because otherwise ConvexHull is going to be incomplete for the client packages
+ConvexHullOwt::ConvexHullOwt() = default;
+ConvexHullOwt::ConvexHullOwt(const ConvexHullOwt&) = default;
+ConvexHullOwt::ConvexHullOwt(ConvexHullOwt&&) = default;
+ConvexHullOwt::~ConvexHullOwt() = default;
 
 LocalTime ConvexHullOwt::translateToLocalTimestamp(RemoteTime remoteTimeTics) const {
   return LocalTime(impl.getLocalTime(remoteTimeTics));
@@ -47,4 +53,3 @@ ConvexHullOwt* ConvexHullOwt::cloneImpl() const {
 }
 
 }
-
