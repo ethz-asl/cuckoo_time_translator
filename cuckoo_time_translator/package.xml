@@ -20,6 +20,7 @@
   <exec_depend>message_runtime</exec_depend>
 
   <depend>cuckoo_time_translator_algorithms</depend>
+  <depend>rosconsole_bridge</depend>
 
   <test_depend>rostest</test_depend>
 </package>
