@@ -20,6 +20,7 @@ KalmanOwt::~KalmanOwt() {
 
 LocalTime KalmanOwt::translateToLocalTimestamp(const RemoteTime remoteTimeTics) const {
   if(!isInitialized_) {
+    logError("The KalmanOwt filter is not yet ready to translate! Use isReadyToTranslate to check before calling translateToLocalTimestamp!");
     throw std::runtime_error("The filter not initialized yet!");
   }
   const double dt = remoteTimeTics - lastUpdateDeviceTime_;
