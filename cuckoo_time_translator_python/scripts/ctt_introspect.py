@@ -59,7 +59,9 @@ if __name__ == '__main__':
     if args.useAffineZoom:
       base_times = np.linspace(ds.receive_times[0], ds.receive_times[-1], len(ds.receive_times))
     else:
-      base_times = np.array(ConvexHullFilter(True).apply(ds.raw_hw_times, ds.receive_times))
+      baselineFilter = ConvexHullFilter(True)
+      base_times = np.array(baselineFilter.apply(ds.raw_hw_times, ds.receive_times))
+      print("Baseline filter after filtering: " + baselineFilter.getConfigAndStateString())
   
     delaysToPlot = []
     labels = []
@@ -78,6 +80,7 @@ if __name__ == '__main__':
     filterColors = ['m', 'grey', 'cyan', 'k', 'orange']
     for i, filter in enumerate(hwFilters):
         addToPlot(filter.apply(ds.raw_hw_times, ds.receive_times), filter.getConfigString(args.showDefaults), filterColors[i])
+        print("After filtering: " + filter.getConfigAndStateString())
   
     for d, lab in zip(delaysToPlot, labels):
       printDelayStat(d, lab)

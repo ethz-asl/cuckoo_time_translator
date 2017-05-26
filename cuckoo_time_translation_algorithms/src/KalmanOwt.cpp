@@ -43,7 +43,7 @@ void KalmanOwt::printNameAndConfig(std::ostream & out) const {
       << ")";
 }
 void KalmanOwt::printState(std::ostream & out) const {
-  out << "offset=" << x_(0) << ", skew=" << x_(1) << ", dt=" << dt_;
+  out << "offset=" << std::fixed << x_(0) << ", skew=" << x_(1) << ", dt=" << dt_;
 }
 
 void KalmanOwt::reset() {

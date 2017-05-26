@@ -29,7 +29,7 @@ void ConvexHullOwt::printNameAndConfig(std::ostream& o) const {
   o << "ConvexHull()";
 }
 void ConvexHullOwt::printState(std::ostream& o) const {
-  impl.printHullPoints(o);
+  o << "offset=" << std::fixed << getOffset() << ", skew=" << getSkew() << ", stackSize=" << getStackSize();
 }
 
 void ConvexHullOwt::reset() {

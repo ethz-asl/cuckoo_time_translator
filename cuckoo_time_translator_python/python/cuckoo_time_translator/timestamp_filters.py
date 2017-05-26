@@ -47,6 +47,9 @@ class TimestampFilter:
 
     return correctedhwTimes
 
+  def getConfigAndStateString(self):
+    return self.owt.getNameAndConfigString() + ": "+ self.owt.getStateString()
+
 class ConvexHullFilter (TimestampFilter):
     def __init__(self, *args, **kwargs):
       TimestampFilter.__init__(self, ctt.ConvexHullOwt(), *args, **kwargs)
