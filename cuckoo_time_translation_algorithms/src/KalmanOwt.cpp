@@ -79,7 +79,7 @@ LocalTime KalmanOwt::updateAndTranslateToLocalTimestamp(const RemoteTime remoteT
     const double mahalDistance = sqrt(measurementResidual*measurementResidual*(1.0/S));
 
     if(mahalDistance > config.outlierThreshold){
-      logWarn("KalmanOwt: local_time=%g, remote_time=%g -> measurement_residual=%g, mahal_distance=%g!", localTimeSecs, remoteTimeTics, measurementResidual, mahalDistance);
+      logWarn("KalmanOwt: local_time=%f, remote_time=%f -> measurement_residual=%g, mahal_distance=%g!", localTimeSecs, remoteTimeTics, measurementResidual, mahalDistance);
     } else {
       x_ = x_ + K * measurementResidual;
       P_ = (Eigen::Matrix2d::Identity() - K * H_) * P_;
