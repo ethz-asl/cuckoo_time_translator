@@ -61,7 +61,7 @@ if __name__ == '__main__':
     else:
       baselineFilter = ConvexHullFilter(True)
       base_times = np.array(baselineFilter.apply(ds.raw_hw_times, ds.receive_times))
-      print("Baseline filter after filtering: " + baselineFilter.getConfigAndStateString())
+      info("Baseline filter after filtering: " + baselineFilter.getConfigAndStateString())
   
     delaysToPlot = []
     labels = []
@@ -80,8 +80,9 @@ if __name__ == '__main__':
     filterColors = ['m', 'grey', 'cyan', 'k', 'orange']
     for i, filter in enumerate(hwFilters):
         addToPlot(filter.apply(ds.raw_hw_times, ds.receive_times), filter.getConfigString(args.showDefaults), filterColors[i])
-        print("After filtering: " + filter.getConfigAndStateString())
+        info("After filtering: " + filter.getConfigAndStateString())
   
+    print("Deviation from base line:")
     for d, lab in zip(delaysToPlot, labels):
       printDelayStat(d, lab)
   
