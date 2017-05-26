@@ -83,7 +83,7 @@ if __name__ == '__main__':
       printDelayStat(d, lab)
   
     from cuckoo_time_translator.plotting import plotMultiDelays, show
-    plotMultiDelays(base_times, delaysToPlot, "time [sec]", labels, markersize = 3, colors = colors, fileName = args.output, overwrite = args.force, show = False)
+    plotMultiDelays(base_times, delaysToPlot, "time [sec]", labels, markersize = 4, colors = colors, fileName = args.output, overwrite = args.force, show = False)
 
   if not args.output:
     from cuckoo_time_translator.plotting import show
