@@ -51,26 +51,25 @@ class TimestampFilter:
     return self.owt.getNameAndConfigString() + ": "+ self.owt.getStateString()
 
 class ConvexHullFilter (TimestampFilter):
-    def __init__(self, *args, **kwargs):
-      TimestampFilter.__init__(self, ctt.ConvexHullOwt(), *args, **kwargs)
+  def __init__(self, *args, **kwargs):
+    TimestampFilter.__init__(self, ctt.ConvexHullOwt(), *args, **kwargs)
 
 class KalmanFilter(TimestampFilter):
-    def __init__(self, outlierThreshold = None, sigmaSkew = None, *args, **kwargs):
-      k = ctt.KalmanOwt()
-      c = k.getConfig()
-      
-      extra_params = { "outlierThreshold" : c.outlierThreshold, "sigmaSkew" : c.sigmaSkew }
+  def __init__(self, outlierThreshold = None, sigmaSkew = None, *args, **kwargs):
+    k = ctt.KalmanOwt()
+    c = k.getConfig()
+    
+    extra_params = { "outlierThreshold" : c.outlierThreshold, "sigmaSkew" : c.sigmaSkew }
 
-      if outlierThreshold:
-        c.outlierThreshold = outlierThreshold
-      if sigmaSkew:
-        c.sigmaSkew = sigmaSkew
+    if outlierThreshold:
+      c.outlierThreshold = outlierThreshold
+    if sigmaSkew:
+      c.sigmaSkew = sigmaSkew
 
-      self.outlierThreshold = c.outlierThreshold
-      self.sigmaSkew = c.sigmaSkew
+    self.outlierThreshold = c.outlierThreshold
+    self.sigmaSkew = c.sigmaSkew
 
-      k.setConfig(c)
-      TimestampFilter.__init__(self, k, *args, **kwargs)
-      
-      self._addParamNames(extra_params)
-
+    k.setConfig(c)
+    TimestampFilter.__init__(self, k, *args, **kwargs)
+    
+    self._addParamNames(extra_params)
