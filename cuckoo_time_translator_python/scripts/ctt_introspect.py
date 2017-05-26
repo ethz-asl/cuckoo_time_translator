@@ -19,11 +19,12 @@ if __name__ == '__main__':
   parser.add_argument('-t,--topic', dest='topic', nargs='+', help='The path to the bag file containing the DeviceTimestamp messages')
   parser.add_argument('-v,--verbose', dest='verbose', action='count', help='Increase verbosity (counted)')
   parser.add_argument('-o,--output', dest='output', help='Output file to plot to (PDF)')
+  parser.add_argument('-b,--baseLine', dest='baseLine', default="LeastSquares", help='Use this batch-method as base line; LeastSquare, ConvexHull, Index')
   parser.add_argument('-f,--filters', dest='filters', default=FiltersDefault, help='Additional filters to compare with. Default: ' + FiltersDefault)
   parser.add_argument('--dontPlotReceiveTimes', action='store_true', help='don\'t plot receive timestamps')
   parser.add_argument('--dontPlotPreFiltered', action='store_true', help='don\'t plot pre-filtered timestamps')
-  parser.add_argument('--useAffineZoom', action='store_true', help='use an affine linear transformation to allow high resolution on the y-axis')
   parser.add_argument('--invalidate', action='store_true', help='invalidate any possibly existing cache')
+  parser.add_argument('--showDefaults', action='store_true', help='Show all parameters in the legend even if they are at their default value')
   parser.add_argument('--force', action='store_true', help='Force overwriting')
 
   args = parser.parse_args()
@@ -55,10 +56,20 @@ if __name__ == '__main__':
 
     ds = DeviceTimeStream(realPathBagFile, topic, invalidate = args.invalidate)
   
-    if args.useAffineZoom:
+    baselineFilter = None
+    if args.baseLine == "Index":
       base_times = np.linspace(ds.receive_times[0], ds.receive_times[-1], len(ds.receive_times))
+    elif args.baseLine == "LeastSquares":
+      baselineFilter = LeastSquaresFilter()
+    elif args.baseLine == "ConvexHull":
+      baselineFilter = ConvexHullFilter(True)
     else:
-      base_times = np.array(ConvexHullFilter(True).apply(ds.raw_hw_times, ds.receive_times))
+      error("Unknown base line method : " + str(args.baseLine))
+      sys.exit(1)
+
+    if baselineFilter:
+      base_times = np.array(baselineFilter.apply(ds.raw_hw_times, ds.receive_times))
+      info("Baseline filter after filtering: " + baselineFilter.getConfigAndStateString())
   
     delaysToPlot = []
     labels = []
@@ -76,13 +87,15 @@ if __name__ == '__main__':
   
     filterColors = ['m', 'grey', 'cyan', 'k', 'orange']
     for i, filter in enumerate(hwFilters):
-        addToPlot(filter.apply(ds.raw_hw_times, ds.receive_times), str(filter), filterColors[i])
+        addToPlot(filter.apply(ds.raw_hw_times, ds.receive_times), filter.getConfigString(args.showDefaults), filterColors[i])
+        info("After filtering: " + filter.getConfigAndStateString())
   
+    print("Deviation from base line:")
     for d, lab in zip(delaysToPlot, labels):
       printDelayStat(d, lab)
   
     from cuckoo_time_translator.plotting import plotMultiDelays, show
-    plotMultiDelays(base_times, delaysToPlot, "time [sec]", labels, markersize = 3, colors = colors, fileName = args.output, overwrite = args.force, show = False)
+    plotMultiDelays(base_times, delaysToPlot, "time [sec]", labels, markersize = 4, colors = colors, fileName = args.output, overwrite = args.force, show = False)
 
   if not args.output:
     from cuckoo_time_translator.plotting import show

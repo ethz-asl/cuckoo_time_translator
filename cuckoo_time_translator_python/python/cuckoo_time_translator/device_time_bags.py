@@ -8,7 +8,7 @@ import rosbag
 
 from timestamp_series import TimestampSeries
 from timestamp_series import TimestampSeries
-from tools import error
+from tools import *
 
 DefaultTopic = '/device_time'
 
@@ -26,9 +26,9 @@ class DeviceTimeStream():
     eventsFile = os.path.realpath(bagFile) + topic.replace("/", "_") + ".p"
     if os.path.exists(eventsFile):
         if invalidate:
-            print("Removing " + eventsFile)
+            info("Removing " + eventsFile)
         else:
-            print("Loading from " + eventsFile)
+            verbose("Loading from " + eventsFile)
             self.__dict__ = pickle.load(open(eventsFile, "rb"))
             return
     
