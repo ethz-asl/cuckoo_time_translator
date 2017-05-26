@@ -73,3 +73,23 @@ class KalmanFilter(TimestampFilter):
     TimestampFilter.__init__(self, k, *args, **kwargs)
     
     self._addParamNames(extra_params)
+
+class LeastSquaresFilter(TimestampFilter):
+  def __init__(self):
+    TimestampFilter.__init__(self, None, batch=True)
+
+  def apply(self, hwTimes, receiveTimes):
+    assert(len(hwTimes) > 2)
+    assert(len(hwTimes) == len(receiveTimes))
+
+    from scipy import stats
+    self.skew, self.offset, r_value, p_value, std_err = stats.linregress(hwTimes, receiveTimes)
+    
+    correctedhwTimes = [ self.offset + ht * self.skew for ht in hwTimes ]
+    return correctedhwTimes
+
+  def getConfigString(self, showDefaults = False):
+    return "LeastSquaresFilter()"
+
+  def getConfigAndStateString(self):
+    return self.getConfigString() + ": offset=%f, skew=%f" % (self.offset, self.skew)
