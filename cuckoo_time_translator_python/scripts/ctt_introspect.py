@@ -9,6 +9,8 @@ from cuckoo_time_translator.batch_algo import printDelayStat
 
 from cuckoo_time_translator.tools import *
 
+import cuckoo_time_translator.baseline
+
 FiltersDefault = 'ConvexHullFilter(switchTime = 10), KalmanFilter(), ConvexHullFilter(switchTime = 100)'
 
 if __name__ == '__main__':
@@ -55,28 +57,16 @@ if __name__ == '__main__':
     info("Analyzing topic :" + topic)
 
     ds = DeviceTimeStream(realPathBagFile, topic, invalidate = args.invalidate)
-  
-    baselineFilter = None
-    if args.baseLine == "Index":
-      base_times = np.linspace(ds.receive_times[0], ds.receive_times[-1], len(ds.receive_times))
-    elif args.baseLine == "LeastSquares":
-      baselineFilter = LeastSquaresFilter()
-    elif args.baseLine == "ConvexHull":
-      baselineFilter = ConvexHullFilter(True)
-    else:
-      error("Unknown base line method : " + str(args.baseLine))
-      sys.exit(1)
 
-    if baselineFilter:
-      base_times = np.array(baselineFilter.apply(ds.raw_hw_times, ds.receive_times))
-      info("Baseline filter after filtering: " + baselineFilter.getConfigAndStateString())
-  
-    delaysToPlot = []
+    baseLine = cuckoo_time_translator.baseline.create(args.baseLine)
+    baseline_times = baseLine.compute(ds.raw_hw_times, ds.receive_times)
+
+    offsetsToPlot = []
     labels = []
     colors = []
     
     def addToPlot(times, label, color):
-      delaysToPlot.append(times - base_times)
+      offsetsToPlot.append(times - baseline_times)
       labels.append(label)
       colors.append(color)
 
@@ -91,11 +81,11 @@ if __name__ == '__main__':
         info("After filtering: " + filter.getConfigAndStateString())
   
     print("Deviation from base line:")
-    for d, lab in zip(delaysToPlot, labels):
+    for d, lab in zip(offsetsToPlot, labels):
       printDelayStat(d, lab)
   
     from cuckoo_time_translator.plotting import plotMultiDelays, show
-    plotMultiDelays(base_times, delaysToPlot, "time [sec]", labels, markersize = 4, colors = colors, fileName = args.output, overwrite = args.force, show = False)
+    plotMultiDelays(baseline_times, offsetsToPlot, "time [sec]", labels, markersize = 4, colors = colors, fileName = args.output, overwrite = args.force, show = False)
 
   if not args.output:
     from cuckoo_time_translator.plotting import show
