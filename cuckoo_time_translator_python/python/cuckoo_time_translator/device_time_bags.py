@@ -7,7 +7,6 @@ import pickle
 import rosbag
 
 from timestamp_series import TimestampSeries
-from timestamp_series import TimestampSeries
 from tools import *
 
 DefaultTopic = '/device_time'
@@ -45,3 +44,15 @@ class DeviceTimeStream():
     bag.close()
     # Save data to file
     pickle.dump(self.__dict__, open(eventsFile, "wb"))
+
+def readTimestamps(bagFile, topic):
+  bag = rosbag.Bag(bagFile)
+
+  series = TimestampSeries()
+  
+  for topic, msg, t in bag.read_messages(topics=[topic]):
+    series.append(msg.data.to_sec())
+
+  bag.close()
+
+  return series

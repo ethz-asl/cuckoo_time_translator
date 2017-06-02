@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     ds = DeviceTimeStream(realPathBagFile, topic, invalidate = args.invalidate)
 
-    baseLine = cuckoo_time_translator.baseline.create(args.baseLine)
+    baseLine = cuckoo_time_translator.baseline.create(args.baseLine, bagFile)
     baseline_times = baseLine.compute(ds.raw_hw_times, ds.receive_times)
 
     offsetsToPlot = []
