@@ -16,3 +16,7 @@ But this is beyond this repository.
 ### Why call it translation rather than synchronization? 
 Because **synchronization** refers to what one does to clocks to make them run at the same speed and yield similar times when read at the same time (as for instance NTP and PTP do to computer clocks), whereas the algorithms in this repository are trying to only **translate** the time of one clock for a given event into the another clock's time for the *same* event and not touch the clocks at all.
 
+
+### Examples for how to use it in a ROS sensor driver:
+* https://github.com/ethz-asl/realsense/tree/master/realsense_camera
+* https://github.com/ethz-asl/pointgrey_camera_driver/tree/feature/useCuckooTimeTranslator
