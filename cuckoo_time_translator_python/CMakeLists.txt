@@ -5,8 +5,6 @@ find_package(catkin_simple REQUIRED)
 
 catkin_simple(ALL_REQUIRED)
 
-# Set up the python exports.
-
 # enable warnings
 set (CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unknown-pragmas ${CMAKE_CXX_FLAGS}")
 
@@ -26,14 +24,20 @@ endif ()
 
 
 find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
+find_package(Boost REQUIRED COMPONENTS python) 
+
+include_directories(${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 catkin_python_setup()
-
 cs_add_library(${PROJECT_NAME}
   src/module.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARY})
+string(REGEX REPLACE "_python$" "" LIB_OUTPUT_DIR ${CATKIN_PACKAGE_PYTHON_DESTINATION})
+set_target_properties(${PROJECT_NAME} 
+    PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${LIB_OUTPUT_DIR}
+)
+
+target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARY} ${Boost_LIBRARIES})
 
 cs_install()
 cs_export()
