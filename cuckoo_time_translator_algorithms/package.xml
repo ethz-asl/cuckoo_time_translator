@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>cuckoo_time_translation_algorithms</name>
+  <name>cuckoo_time_translator_algorithms</name>
   <version>0.0.1</version>
   <description>
     Algorithms for translating times emitted by other (cheap) clocks into local system time.

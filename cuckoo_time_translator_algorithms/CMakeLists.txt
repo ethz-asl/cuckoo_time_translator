@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(cuckoo_time_translation_algorithms)
+project(cuckoo_time_translator_algorithms)
 
 find_package(catkin_simple REQUIRED)
 catkin_simple()
