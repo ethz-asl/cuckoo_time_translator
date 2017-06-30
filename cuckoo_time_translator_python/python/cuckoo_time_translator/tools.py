@@ -1,3 +1,4 @@
+import exceptions
 try:
     from termcolor import colored
 except exceptions.ImportError:
