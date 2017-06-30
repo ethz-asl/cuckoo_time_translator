@@ -24,9 +24,16 @@ else ()
   set (CMAKE_CXX_STANDARD 11)
 endif ()
 
-add_python_export_library(${PROJECT_NAME} python/cuckoo_time_translator
+
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
+
+catkin_python_setup()
+
+cs_add_library(${PROJECT_NAME}
   src/module.cpp
 )
+target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARY})
 
 cs_install()
 cs_export()
