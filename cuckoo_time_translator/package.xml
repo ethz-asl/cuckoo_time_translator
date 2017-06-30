@@ -19,7 +19,7 @@
   <depend>std_msgs</depend>
   <exec_depend>message_runtime</exec_depend>
 
-  <depend>cuckoo_time_translation_algorithms</depend>
+  <depend>cuckoo_time_translator_algorithms</depend>
 
   <test_depend>rostest</test_depend>
 </package>
