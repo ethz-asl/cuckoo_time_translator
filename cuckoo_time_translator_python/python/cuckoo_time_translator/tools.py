@@ -1,4 +1,8 @@
+from __future__ import print_function
+
 import exceptions
+import sys
+
 try:
     from termcolor import colored
 except exceptions.ImportError:
@@ -10,19 +14,23 @@ except exceptions.ImportError:
 
 verbosity = False
 
-def info(text):
-    print(colored(text, 'yellow'))
+def printColored(text, color, end = '\n'):
+  print (colored(str(text), color), end = end)
+  if not end:
+    sys.stdout.flush();
 
-def verbose(text):
-    if verbosity:
-        print(colored(text, 'yellow'))
+def info(text, end='\n'):
+  print(text, end)
 
-def warn(text):
-    print(colored(str(text), 'red'))
+def verbose(text, end='\n'):
+  if verbosity:
+    printColored(text, 'cyan', end)
 
+def ok(text, end='\n'):
+  printColored(text, 'green', end)
 
-def error(text):
-    print(colored("Error :" + str(text), 'red'))
+def warn(text, end='\n'):
+  printColored("Warning: " + str(text), 'magenta', end)
 
-def ok(text):
-    print(colored(str(text), 'green'))
+def error(text, end='\n'):
+  printColored("Error: " + str(text), 'red', end)
