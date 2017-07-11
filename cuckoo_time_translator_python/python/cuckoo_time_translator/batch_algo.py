@@ -39,9 +39,7 @@ class LinearModelWithGaps:
     for i, g in enumerate(self.gaps):
       self.indexMap.extend(range(self.gaps[i - 1] - i + 1 if i > 0 else 0, g - i))
       self.indexMap.append(None)
-      
-    print(self.__dict__)
-    
+
   def mapXIndexToY(self, ix):
     if ix is None or ix < 0 : return None
     
@@ -56,6 +54,9 @@ class LinearModelWithGaps:
       return None, None
     else:
       return yIndex, self.slope * x + self.offset
+    
+  def __str__(self):
+    return "LMWG(s=%g, off=%g, #gaps=%d)" % (self.slope, self.offset, len(self.gaps))
 
 
 class IndexShifter():
@@ -110,9 +111,9 @@ def linregress(x, y, fixSlope):
     slope, offset, r_value, p_value, std_err = stats.linregress(x, y)
     return (slope, offset)
 
-def findGapsAndAffineLinearFit(x, y_with_gaps, fixSlope = False):
+def findGapsAndAffineLinearFit(x, yWithGaps, fixSlope = False):
   x = list(x)
-  y = list(y_with_gaps)
+  y = list(yWithGaps)
   
   assert(len(x) >= len(y))
   
@@ -121,18 +122,18 @@ def findGapsAndAffineLinearFit(x, y_with_gaps, fixSlope = False):
     xa = np.asarray(x[:len(y)])
     ya = np.asarray(y)
     slope, offset = linregress(xa, ya, fixSlope)
-#     print("slope=%f, offset=%f" %(slope, offset))
-#     print("std_err=", std_err)
-#     
+    print("slope=%f, offset=%f" %(slope, offset))
 #     print("pred=", xa * slope + offset)
 #     
     delta = ya - (xa * slope + offset)
     delta_d = np.diff(delta)
 #     print("d=", delta)
 #     print("dd=", delta_d)
-#     
-    candidates = sorted(list(np.argwhere(delta_d > 0.1).flatten())) # .6 * np.mean(np.diff(y)
-#     print("candidates=", candidates)
+
+    print("dd: min=%g, mean= %g, max=%g" % (np.min(delta_d), np.mean(delta_d), np.max(delta_d)))
+
+    candidates = sorted(list(np.argwhere(delta_d >= np.max(delta_d)).flatten())) # .6 * np.mean(np.diff(y)
+    print("candidates=", candidates)
     if candidates:
       for i in candidates:
         i = i + len(gap_indices) + 1
@@ -157,3 +158,21 @@ def calcError(x, y, linearModelWithGaps):
 #       err += abs(yHat - y[iy])
       c+=1
   return err / c, c
+
+def findBestShiftedModel(xI, yIWithGaps, fixSlope, ran = range(-2, 3)):
+  bestShiftedModel = None
+  lowestErr = None
+  for i in ran:
+    indexShifter = IndexShifter(i)
+    x = indexShifter.calcShiftedX(xI)
+    y = indexShifter.calcShiftedY(yIWithGaps)
+    if len(x) < len(y):
+      y = y[:len(x)]
+    model = findGapsAndAffineLinearFit(x, y, fixSlope=fixSlope)
+    err = calcError(x, y, model)
+    print("i=", i, ", err=", err, ", model=", model)
+    if not lowestErr or lowestErr > err:
+      lowestErr, bestShiftedModel = err, ShiftedModel(indexShifter, model)
+
+  print(lowestErr, bestShiftedModel)
+  return bestShiftedModel

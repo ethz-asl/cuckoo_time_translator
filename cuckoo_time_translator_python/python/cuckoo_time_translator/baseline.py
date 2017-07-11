@@ -33,6 +33,7 @@ class IndexBaseLine(BaseLine):
   def compute(self, raw_hw_times, receive_times):
     return np.linspace(receive_times[0], receive_times[-1], len(receive_times))
 
+
 class TopicBaseline(BaseLine):
   def __init__(self, bagFile, topic):
     from device_time_bags import readTimestamps
@@ -41,38 +42,27 @@ class TopicBaseline(BaseLine):
     assert len(self.series) > 0
     
   def compute(self, raw_hw_times, receive_times):
-    from batch_algo import findGapsAndAffineLinearFit, calcError, IndexShifter, ShiftedModel
+    from batch_algo import findGapsAndAffineLinearFit, findBestShiftedModel, IndexShifter, ShiftedModel
 
     useHwTimeForAssignment = False
-    bestShiftedModel = None
-    lowestErr = None
-    for i in range(-2, 3):
-      indexShifter = IndexShifter(i)
-      x = indexShifter.calcShiftedX(raw_hw_times if useHwTimeForAssignment else receive_times)
-      y = indexShifter.calcShiftedY(self.series)
-      if len(x) < len(y):
-        y = y[:len(x)]
-
-      model = findGapsAndAffineLinearFit(x, y, fixSlope = not useHwTimeForAssignment)
-      err = calcError(x, y, model)
-      print("i=", i, ", err=", err)
-      if not lowestErr or lowestErr > err:
-        lowestErr, bestShiftedModel = (err, ShiftedModel(indexShifter, model))
-
-    print(lowestErr, bestShiftedModel)
     
+    xI = raw_hw_times if useHwTimeForAssignment else receive_times
+    yI = self.series
+    fixSlope = not useHwTimeForAssignment
+
+    bestShiftedModel = findBestShiftedModel(xI, yI, fixSlope)
     
     if useHwTimeForAssignment:
       indexShifter = bestShiftedModel.indexShifter
       x = indexShifter.calcShiftedX(receive_times)
-      y = indexShifter.calcShiftedY(self.series)
+      y = indexShifter.calcShiftedY(yI)
       if len(x) < len(y):
         y = y[:len(x)]
 
-      model = findGapsAndAffineLinearFit(x, y, fixSlope = not useHwTimeForAssignment)
+      model = findGapsAndAffineLinearFit(x, y, fixSlope = fixSlope)
       bestShiftedModel = ShiftedModel(indexShifter, model)
 
-    return bestShiftedModel.calcCorrespondingY(range(len(receive_times)), self.series)
+    return bestShiftedModel.calcCorrespondingY(range(len(receive_times)), yI)
 
 def create(configString, bagFile):
     name = configString
