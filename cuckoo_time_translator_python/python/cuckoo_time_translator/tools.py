@@ -34,3 +34,20 @@ def warn(text, end='\n'):
 
 def error(text, end='\n'):
   printColored("Error: " + str(text), 'red', end)
+
+
+def loadJson(in_file, ignoreMissing = False):
+  from json import load
+  if ignoreMissing:
+    from os.path import exists
+    if not exists(in_file):
+      return None
+
+  with open(in_file, 'r') as f:
+    data = load(f)
+  return data
+
+def writeJson(out_file, data):
+  from json import dump
+  with open(out_file, 'w') as f:
+    dump(data, f, indent=3, sort_keys=True)
