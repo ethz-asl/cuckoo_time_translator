@@ -11,22 +11,25 @@ import matplotlib.pyplot as plt
 
 from tools import *
 
+DefaultOverwrite = False
+
 def show(block = True):
     plt.show(block)
 
-def save(fig, legend, fileName, fileFormat = 'pdf', overwrite = False):
+def save(fig, legend, fileName, fileFormat = 'pdf', overwrite = None):
+    if overwrite is None:
+      overwrite = DefaultOverwrite
     fullFileName = fileName + '.' + fileFormat if not fileName.endswith(fileFormat) else fileName
     if not overwrite and os.path.exists(fullFileName):
         warn("Output file %s exists already! Not overwriting!" % fullFileName)
         return
 
-    print("Writing plot to " + fullFileName)
     extra = ()
     if legend:
         extra = (legend,)
         
     fig.savefig(fullFileName, bbox_inches='tight', format=fileFormat)
-
+    ok("Wrote plot to " + fullFileName)
 
 def plotMultiDelays(x, delays, xLabel,  labels = None, title = None, markersize = 1.5, fileName = None, overwrite = None, colors = None, block = False, show = False):
     if not colors:
