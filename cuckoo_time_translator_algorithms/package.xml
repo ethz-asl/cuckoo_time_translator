@@ -16,6 +16,7 @@
 
   <build_depend>roscpp</build_depend>
   <depend>cmake_modules</depend>
+  <depend>rosconsole_bridge</depend>
 
   <test_depend>gtest</test_depend>
 </package>
