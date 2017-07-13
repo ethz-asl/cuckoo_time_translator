@@ -1,10 +1,10 @@
+#include "MockCuckooDeviceDriver.h"
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #pragma GCC diagnostic pop
-
-#include "MockCuckooDeviceDriver.h"
 
 namespace cuckoo_time_translator {
 constexpr uint32_t MockCuckooDeviceDriver::kWrappingNumber;
