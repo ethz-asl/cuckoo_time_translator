@@ -8,20 +8,24 @@ def chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-def printDelayStat(delays, name, outlierLimit = None, file = None, chunkSizes = ()):
+def printToLogAndFile(text, logFunction=None, file = None):
+  if file:
+    print(text, file = file)
+  if logFunction:
+    logFunction(text)
+  else:
+    print(text)
+
+def printDelayStat(delays, name, outlierLimit = None, file = None, chunkSizes = (), logFunction = None):
     if delays is not None and len(delays):
         if outlierLimit:
             delays = delays[delays < outlierLimit]
             
         delays = np.array(delays) * 1e3 # convert to ms
         
-        files = [sys.stdout]
-        if file: files.append(file)
-        for f in files:
-            print("%s: mean=%f ms, std=%f ms" % (name, np.nanmean(delays), np.nanstd(delays)), file = f)
-            for n in chunkSizes:
-                print("std(%s over %d chunks) = %g ms" %(name, n, np.std([ np.mean(c) for c in chunks(delays, n)])), file = f)
-
+        printToLogAndFile("%s: mean=%f ms, std=%f ms" % (name, np.nanmean(delays), np.nanstd(delays)), file = file, logFunction = logFunction)
+        for n in chunkSizes:
+            printToLogAndFile("std(%s over %d chunks) = %g ms" %(name, n, np.std([ np.mean(c) for c in chunks(delays, n)])), file = file, logFunction = logFunction)
     else :
         print("No %s data!" % name)
 
