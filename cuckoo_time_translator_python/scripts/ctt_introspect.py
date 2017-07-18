@@ -21,7 +21,7 @@ if __name__ == '__main__':
   parser.add_argument('-t,--topic', dest='topic', nargs='+', help='The path to the bag file containing the DeviceTimestamp messages')
   parser.add_argument('-v,--verbose', dest='verbose', action='count', help='Increase verbosity (counted)')
   parser.add_argument('-o,--output', dest='output', help='Output file to plot to (PDF)')
-  parser.add_argument('-b,--baseLine', dest='baseLine', default="LeastSquares", help='Use this batch-method as base line; LeastSquare, ConvexHull, Index')
+  parser.add_argument('-b,--baseLine', dest='baseLine', default="LeastSquares", help='Use this batch-method as base line; LeastSquares, ConvexHull, Index')
   parser.add_argument('-f,--filters', dest='filters', default=FiltersDefault, help='Additional filters to compare with. Default: ' + FiltersDefault)
   parser.add_argument('--dontPlotReceiveTimes', action='store_true', help='don\'t plot receive timestamps')
   parser.add_argument('--dontPlotPreFiltered', action='store_true', help='don\'t plot pre-filtered timestamps')
