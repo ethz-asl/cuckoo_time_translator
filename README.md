@@ -1,3 +1,5 @@
+[![Build Status](https://jenkins.asl.ethz.ch/buildStatus/icon?job=cuckoo_time_translator)](https://jenkins.asl.ethz.ch/job/cuckoo_time_translator/)
+
 # CuckooTimeTranslator
 ### Algorithms for translating times emitted by other (cheap) clocks into local system time
 
