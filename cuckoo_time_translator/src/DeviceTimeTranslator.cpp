@@ -187,7 +187,7 @@ class DeviceTimeTranslator::Impl {
           break;
         default:
           ROS_ERROR("Unknown device time filter algorithm : %u. Falling back to no filter (NopOwt).", static_cast<unsigned>(expectedAlgo.type));
-        case FilterAlgorithm::None:
+        case FilterAlgorithm::ReceiveTimeOnly:
           timeTranslator_ = new NopOwt();
           break;
       }
@@ -216,7 +216,7 @@ class DeviceTimeTranslator::Impl {
   }
 
   OneWayTranslator* timeTranslator_;
-  FilterAlgorithm currentAlgo_ = FilterAlgorithm::None, expectedAlgo_ = FilterAlgorithm::None;
+  FilterAlgorithm currentAlgo_ = FilterAlgorithm::ReceiveTimeOnly, expectedAlgo_ = FilterAlgorithm::ReceiveTimeOnly;
   ros::Publisher deviceTimePub_;
   ros::NodeHandle nh_;
   dynamic_reconfigure::Server<DeviceTimeTranslatorConfig> srv_;
@@ -238,8 +238,8 @@ DeviceTimeTranslator::DeviceTimeTranslator(const NS & nameSpace, const Defaults 
   pImpl_->getDeviceTimePub() = pImpl_->getNh().advertise<DeviceTimestamp>("", 5);
   pImpl_->getConfigSrv().setCallback(boost::bind(&DeviceTimeTranslator::configCallback, this, _1, _2));
 
-  if(pImpl_->getExpectedAlgo() == FilterAlgorithm::None){
-    ROS_WARN("Current %s/filterAlgo setting (=None ~ %u) causes the sensor's hardware clock to be ignore. Instead the receive time in the driver is used as timestamp.", nameSpace.toString().c_str(), unsigned(FilterAlgorithm::None));
+  if(pImpl_->getExpectedAlgo() == FilterAlgorithm::ReceiveTimeOnly){
+    ROS_WARN("Current %s/filterAlgo setting (=ReceiveTimeOnly ~ %u) causes the sensor's hardware clock to be ignore. Instead the receive time in the driver is used as timestamp.", nameSpace.toString().c_str(), unsigned(FilterAlgorithm::ReceiveTimeOnly));
   }
 }
 

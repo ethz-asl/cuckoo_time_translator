@@ -18,7 +18,7 @@ class DeviceTimeTranslatorConfig;
 //TODO (c++11) use enum class
 struct FilterAlgorithm {
   enum Type {
-    None,
+    ReceiveTimeOnly,
     ConvexHull,
     Kalman,
   } type;
