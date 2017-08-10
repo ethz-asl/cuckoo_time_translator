@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include <console_bridge/console.h>
+#include <cuckoo_time_translator/AbstractAssert.h>
 
 namespace cuckoo_time_translator {
 
@@ -19,10 +20,7 @@ KalmanOwt::~KalmanOwt() {
 }
 
 LocalTime KalmanOwt::translateToLocalTimestamp(const RemoteTime remoteTimeTics) const {
-  if(!isInitialized_) {
-    logError("The KalmanOwt filter is not yet ready to translate! Use isReadyToTranslate to check before calling translateToLocalTimestamp!");
-    throw std::runtime_error("The filter not initialized yet!");
-  }
+  AASSERT(isInitialized_, "The KalmanOwt filter is not yet ready to translate! Use isReadyToTranslate to check before calling translateToLocalTimestamp!");
   const double dt = remoteTimeTics - lastUpdateDeviceTime_;
   return LocalTime(remoteTimeTics + x_(0) + dt * x_(1));
 }

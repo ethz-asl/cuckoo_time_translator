@@ -14,7 +14,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>catkin_simple</buildtool_depend>
 
-  <build_depend>roscpp</build_depend>
   <depend>cmake_modules</depend>
   <depend>rosconsole_bridge</depend>
 
