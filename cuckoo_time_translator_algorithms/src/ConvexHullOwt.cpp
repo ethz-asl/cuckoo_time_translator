@@ -1,4 +1,7 @@
 #include <cuckoo_time_translator/ConvexHullOwt.h>
+
+#include <iostream>
+
 #include <cuckoo_time_translator/ConvexHullImpl.h>
 
 namespace cuckoo_time_translator {

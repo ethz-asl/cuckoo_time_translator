@@ -3,6 +3,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <cuckoo_time_translator/AbstractAssert.h>
+
 namespace cuckoo_time_translator {
 
 double TimePair::update(OneWayTranslator & owt) const {
@@ -20,7 +22,8 @@ NopOwt::~NopOwt() {
 }
 
 LocalTime NopOwt::translateToLocalTimestamp(RemoteTime /*remoteTimeTics*/) const {
-  throw std::runtime_error("translateToLocalTimestamp is not implemented in NopOwt!");
+  AASSERT(false, "translateToLocalTimestamp is not implemented in NopOwt!");
+  throw ""; // dummy;
 }
 
 LocalTime NopOwt::updateAndTranslateToLocalTimestamp(RemoteTime /*remoteTimeTics*/, LocalTime localTimeSecs) {
