@@ -170,8 +170,8 @@ class UnwrappedDeviceTimeTranslator : public DeviceTimeUnwrapperAndTranslator<Ti
 
 class DefaultDeviceTimeUnwrapperAndTranslatorWithTransmitTime : public DeviceTimeUnwrapperAndTranslatorWithTransmitTime<> {
  public:
-  DefaultDeviceTimeUnwrapperAndTranslatorWithTransmitTime(const WrappingClockParameters & wrappingClockParameters, const NS & nameSpace) :
-    DeviceTimeUnwrapperAndTranslatorWithTransmitTime<>(wrappingClockParameters, nameSpace) {}
+  DefaultDeviceTimeUnwrapperAndTranslatorWithTransmitTime(const WrappingClockParameters & wrappingClockParameters, const NS & nameSpace, const Defaults & defaults = Defaults()) :
+    DeviceTimeUnwrapperAndTranslatorWithTransmitTime<>(wrappingClockParameters, nameSpace, defaults) {}
 };
 
 }
