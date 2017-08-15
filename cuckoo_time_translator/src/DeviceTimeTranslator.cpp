@@ -14,13 +14,14 @@
 
 #include <cuckoo_time_translator/OneWayTranslator.h>
 #include <cuckoo_time_translator/ConvexHullOwt.h>
+#include <cuckoo_time_translator/KalmanOwt.h>
 #include <cuckoo_time_translator/SwitchingOwt.h>
+#include <cuckoo_time_translator/OwtFactory.hpp>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <cuckoo_time_translator/DeviceTimeTranslatorConfig.h>
 #include <cuckoo_time_translator/DeviceTimestamp.h>
 #pragma GCC diagnostic pop
-#include <cuckoo_time_translator/KalmanOwt.h>
 
 namespace cuckoo_time_translator {
 
@@ -55,6 +56,18 @@ NS::NS(const char* nameSpace, bool appendDeviceTimeSubnamespace)
 
 class Defaults::Impl {
  public:
+  Impl(){
+    regOwtFactory(new ReceiveTimeOnlyOwtFactory);
+    regOwtFactory(new KalmanOwtFactory);
+    regOwtFactory(new ConvexHullOwtFactory);
+  }
+
+  Impl(const Impl& other){
+    for(auto & e : other.owtFactoryReg){
+      owtFactoryReg.emplace(e.first, e.second->clone());
+    }
+  }
+
   void setFilterAlgorithm(FilterAlgorithm filterAlgorithm){
     setParam("filter_algo", static_cast<int>(filterAlgorithm));
   }
@@ -66,6 +79,12 @@ class Defaults::Impl {
       op.second(nh, op.first);
     }
   }
+
+  void regOwtFactory(OwtFactory * owtFactoryPtr) {
+    owtFactoryReg[owtFactoryPtr->getFilterAlgorithm()].reset(owtFactoryPtr);
+  }
+
+  std::unique_ptr<OneWayTranslator> createOwt(FilterAlgorithm fa) const;
  private:
   template <typename T>
   void setParam(const std::string & name, T value){
@@ -81,12 +100,17 @@ class Defaults::Impl {
     });
   }
   std::map<std::string, std::function<void(ros::NodeHandle & nh, const std::string & name)>> operations;
+  std::map<FilterAlgorithm::Type, std::unique_ptr<OwtFactory>> owtFactoryReg;
 };
 
 Defaults::Defaults() :
   pImpl_(new Impl()){
-
 }
+
+Defaults::Defaults(const Defaults & other) :
+  pImpl_(new Impl(*other.pImpl_)) {
+}
+
 Defaults::~Defaults()
 {
   delete pImpl_;
@@ -102,23 +126,42 @@ Defaults & Defaults::setSwitchTimeSecs(double secs) {
   return *this;
 }
 
+void Defaults::regFilterConfig_(OwtFactory* owtFactoryPtr) {
+  getImpl().regOwtFactory(owtFactoryPtr);
+}
+
+Defaults::Impl& Defaults::getImpl() {
+  return *pImpl_;
+}
+
 const Defaults::Impl& Defaults::getImpl() const {
   return *pImpl_;
 }
 
+std::unique_ptr<OneWayTranslator> Defaults::Impl::createOwt(FilterAlgorithm fa) const {
+  auto e = owtFactoryReg.find(fa);
+  if(e != owtFactoryReg.end()){
+    return e->second->createOwt();
+  } else {
+    ROS_ERROR("Unknown device time filter algorithm : %u. Falling back to no filter (NopOwt).", static_cast<unsigned>(fa));
+    return std::unique_ptr<OneWayTranslator>(new NopOwt);
+  }
+}
+
+
+std::unique_ptr<OneWayTranslator> Defaults::createOwt(FilterAlgorithm::Type fa) const {
+  return getImpl().createOwt(fa);
+}
+
 class DeviceTimeTranslator::Impl {
  public:
-  Impl(const std::string & nameSpace, const Defaults & defaults) : timeTranslator_(NULL), nh_(nameSpace), srv_((defaults.getImpl().apply(nh_), nh_))
+  Impl(const std::string & nameSpace, const Defaults & defaults) : defaults_(defaults), nh_(nameSpace), srv_((defaults.getImpl().apply(nh_), nh_))
   {
-  }
-
-  ~Impl() {
-    delete timeTranslator_;
   }
 
   OneWayTranslator & getTimeTranslator(){
     updateTranslator();
-    return * timeTranslator_;
+    return *timeTranslator_;
   }
 
   FilterAlgorithm getCurrentAlgo() const {
@@ -157,6 +200,10 @@ class DeviceTimeTranslator::Impl {
     return nh_;
   }
 
+  const OneWayTranslator* getCurrentOwt() const {
+    return timeTranslator_.get();
+  }
+
  private:
 
   template <typename Owt>
@@ -174,29 +221,18 @@ class DeviceTimeTranslator::Impl {
     bool somethingWasUpdated = false;
 
     if (timeTranslator_ == nullptr || currentAlgo_ != expectedAlgo || (shouldSwitch(expectedSwitchingTimeSeconds) != shouldSwitch(switchingTimeSeconds_))) {
-      delete timeTranslator_;
+      timeTranslator_.reset();
       switchingTimeSeconds_ = expectedSwitchingTimeSeconds;
       somethingWasUpdated = true;
-
-      switch(expectedAlgo.type){
-        case FilterAlgorithm::ConvexHull:
-          timeTranslator_ = createOwt<ConvexHullOwt>();
-          break;
-        case FilterAlgorithm::Kalman:
-          timeTranslator_ = createOwt<KalmanOwt>();
-          break;
-        default:
-          ROS_ERROR("Unknown device time filter algorithm : %u. Falling back to no filter (NopOwt).", static_cast<unsigned>(expectedAlgo.type));
-        case FilterAlgorithm::ReceiveTimeOnly:
-          timeTranslator_ = new NopOwt();
-          break;
+      timeTranslator_ = defaults_.createOwt(expectedAlgo_);
+      if(dynamic_cast<NopOwt*>(timeTranslator_.get()) == nullptr && shouldSwitch(expectedSwitchingTimeSeconds)){
+        timeTranslator_ = std::unique_ptr<OneWayTranslator>(new SwitchingOwt(expectedSwitchingTimeSeconds, [this]() { return defaults_.createOwt(expectedAlgo_); }));
       }
-
       switchingTimeSeconds_ = expectedSwitchingTimeSeconds;
       currentAlgo_ = expectedAlgo;
     }
     else if (expectedSwitchingTimeSeconds != switchingTimeSeconds_) {
-      auto switchingOwt = dynamic_cast<SwitchingOwt*>(timeTranslator_);
+      auto switchingOwt = dynamic_cast<SwitchingOwt*>(timeTranslator_.get());
       if(switchingOwt){
         switchingOwt->setSwitchingTimeSeconds(expectedSwitchingTimeSeconds);
         somethingWasUpdated = true;
@@ -215,8 +251,9 @@ class DeviceTimeTranslator::Impl {
     return expectedSwitchingTimeSeconds > 0;
   }
 
-  OneWayTranslator* timeTranslator_;
+  std::unique_ptr<OneWayTranslator> timeTranslator_;
   FilterAlgorithm currentAlgo_ = FilterAlgorithm::ReceiveTimeOnly, expectedAlgo_ = FilterAlgorithm::ReceiveTimeOnly;
+  Defaults defaults_;
   ros::Publisher deviceTimePub_;
   ros::NodeHandle nh_;
   dynamic_reconfigure::Server<DeviceTimeTranslatorConfig> srv_;
@@ -224,6 +261,13 @@ class DeviceTimeTranslator::Impl {
   double switchingTimeSeconds_ = 0, expectedSwitchingTimeSeconds_ = 0;
   DeviceTimestamp msg;
 };
+
+double DeviceTimeTranslator::getExpectedSwitchingTimeSeconds() const {
+  return pImpl_->getExpectedSwitchingTimeSeconds();
+}
+void DeviceTimeTranslator::setExpectedSwitchingTimeSeconds(double expectedSwitchingTimeSeconds) {
+  pImpl_->setExpectedSwitchingTimeSeconds(expectedSwitchingTimeSeconds);
+}
 
 void DeviceTimeTranslator::configCallback(DeviceTimeTranslatorConfig &config, uint32_t /*level*/)
 {
@@ -239,7 +283,7 @@ DeviceTimeTranslator::DeviceTimeTranslator(const NS & nameSpace, const Defaults 
   pImpl_->getConfigSrv().setCallback(boost::bind(&DeviceTimeTranslator::configCallback, this, _1, _2));
 
   if(pImpl_->getExpectedAlgo() == FilterAlgorithm::ReceiveTimeOnly){
-    ROS_WARN("Current %s/filterAlgo setting (=ReceiveTimeOnly ~ %u) causes the sensor's hardware clock to be ignore. Instead the receive time in the driver is used as timestamp.", nameSpace.toString().c_str(), unsigned(FilterAlgorithm::ReceiveTimeOnly));
+    ROS_WARN("Current %s/filterAlgo setting (=%u ~ ReceiveTimeOnly) causes the sensor's hardware clock to be ignore. Instead the receive time in the driver is used as timestamp.", nameSpace.toString().c_str(), unsigned(FilterAlgorithm::ReceiveTimeOnly));
   }
 }
 
@@ -251,6 +295,9 @@ FilterAlgorithm DeviceTimeTranslator::getCurrentFilterAlgorithm() const {
   return pImpl_->getCurrentAlgo();
 }
 
+const OneWayTranslator* DeviceTimeTranslator::getCurrentOwt() const {
+  return pImpl_->getCurrentOwt();
+}
 
 void DeviceTimeTranslator::setFilterAlgorithm(FilterAlgorithm filterAlgorithm) {
   pImpl_->setExpectedAlgo(filterAlgorithm);
