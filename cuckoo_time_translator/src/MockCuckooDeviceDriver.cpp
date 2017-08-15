@@ -1,5 +1,6 @@
 #include "MockCuckooDeviceDriver.h"
 
+#include <cuckoo_time_translator/KalmanOwt.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "ros/ros.h"
@@ -12,9 +13,16 @@ constexpr double MockCuckooDeviceDriver::kFreq;
 constexpr double MockCuckooDeviceDriver::kSkew;
 constexpr double MockCuckooDeviceDriver::kOffset;
 
+KalmanOwtConfig getMockKalmanConfig() {
+  KalmanOwtConfig kc;
+  kc.outlierThreshold = 0;
+  return kc;
+}
+
+
 MockCuckooDeviceDriver::MockCuckooDeviceDriver(ros::NodeHandle & nh) :
   cuckooClock(kWrappingNumber, kFreq, kSkew, ros::Duration(kOffset)),
-  translator(WrappingClockParameters{kWrappingNumber, kFreq}, nh.getNamespace())
+  translator(WrappingClockParameters{kWrappingNumber, kFreq}, nh.getNamespace(), Defaults().setFilterConfig(getMockKalmanConfig()))
 {
 }
 

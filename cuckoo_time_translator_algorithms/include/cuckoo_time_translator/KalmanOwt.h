@@ -10,19 +10,21 @@
 
 namespace cuckoo_time_translator {
 
+struct KalmanOwtConfig {
+  double sigmaInitOffset = 2e-3;
+  double sigmaInitSkew = 1e-3;
+  double sigmaOffset = 2e-3;
+  double sigmaSkew = 2e-6;
+  double updateRate = 0.5;
+  double outlierThreshold = 1.0;
+};
+
 class KalmanOwt : public OneWayTranslator
 {
  public:
-  struct Config {
-    double sigmaInitOffset = 2e-3;
-    double sigmaInitSkew = 1e-3;
-    double sigmaOffset = 2e-3;
-    double sigmaSkew = 2e-6;
-    double updateRate = 0.5;
-    double outlierThreshold = 1.0;
-  };
+  typedef KalmanOwtConfig Config;
 
-  KalmanOwt();
+  KalmanOwt(Config config = Config());
   virtual ~KalmanOwt();
   virtual LocalTime translateToLocalTimestamp(RemoteTime device_time) const override;
   virtual LocalTime updateAndTranslateToLocalTimestamp(RemoteTime device_time, LocalTime localTimeSecs) override;

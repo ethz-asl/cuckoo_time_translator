@@ -1,5 +1,6 @@
-#include <cuckoo_time_translator/ConvexHullOwt.h>
+#include <cuckoo_time_translator/KalmanOwt.h>
 #include <cuckoo_time_translator/DeviceTimeTranslator.h>
+#include <cuckoo_time_translator/SwitchingOwt.h>
 
 #include <gtest/gtest.h>
 
@@ -33,4 +34,29 @@ TEST(DeviceTimeTranslator, UnwrappedDeviceTimeTranslatorNoTranslation) {
   EXPECT_EQ(10.0, translator.update(100ul, ros::Time(10.0)).toSec());
   EXPECT_EQ(110.0, translator.update(1000ul, ros::Time(110.0)).toSec());
   EXPECT_EQ(120.0, translator.update(0ul, ros::Time(120.0)).toSec());
+}
+
+TEST(DeviceTimeTranslator, DefaultsForKalmanAlgo) {
+  KalmanOwtConfig kc;
+  kc.outlierThreshold +=1;
+  UnwrappedDeviceTimeTranslator translator({100.0}, "", Defaults().setFilterConfig(kc));
+  translator.setFilterAlgorithm(FilterAlgorithm::Kalman);
+
+  EXPECT_EQ(10.0, translator.update(100ul, ros::Time(10.0)).toSec()); // passes through receive time because it is the first event
+  auto k = dynamic_cast<const KalmanOwt*>(translator.getCurrentOwt());
+  ASSERT_TRUE(k);
+  EXPECT_EQ(kc.outlierThreshold, k->getConfig().outlierThreshold);
+}
+
+TEST(DeviceTimeTranslator, Switching) {
+  KalmanOwtConfig kc;
+  UnwrappedDeviceTimeTranslator translator({100.0}, "");
+  translator.setFilterAlgorithm(FilterAlgorithm::Kalman);
+  static const double ExpectedSwitchingTime = 333.0;
+  translator.setExpectedSwitchingTimeSeconds(ExpectedSwitchingTime);
+
+  EXPECT_EQ(10.0, translator.update(100ul, ros::Time(10.0)).toSec()); // passes through receive time because it is the first event
+  auto owt = dynamic_cast<const SwitchingOwt*>(translator.getCurrentOwt());
+  ASSERT_TRUE(owt);
+  EXPECT_EQ(ExpectedSwitchingTime, owt->getSwitchingTimeSeconds());
 }

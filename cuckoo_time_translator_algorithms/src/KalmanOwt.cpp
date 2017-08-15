@@ -8,11 +8,12 @@
 
 namespace cuckoo_time_translator {
 
-KalmanOwt::KalmanOwt() :
+KalmanOwt::KalmanOwt(Config config) :
+  config(config),
   R_ (0),
   isInitialized_(false),
   lastUpdateDeviceTime_(0),
-  dt_ (0)
+  dt_(0)
 {
 }
 
@@ -76,7 +77,7 @@ LocalTime KalmanOwt::updateAndTranslateToLocalTimestamp(const RemoteTime remoteT
 
     const double mahalDistance = sqrt(measurementResidual*measurementResidual*(1.0/S));
 
-    if(mahalDistance > config.outlierThreshold){
+    if(config.outlierThreshold && mahalDistance > config.outlierThreshold){
       logWarn("KalmanOwt: local_time=%f, remote_time=%f -> measurement_residual=%g, mahal_distance=%g!", localTimeSecs, remoteTimeTics, measurementResidual, mahalDistance);
     } else {
       x_ = x_ + K * measurementResidual;

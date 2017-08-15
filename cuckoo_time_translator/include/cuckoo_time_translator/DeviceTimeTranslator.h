@@ -58,16 +58,31 @@ class NS {
   std::string nameSpace_;
 };
 
+class KalmanOwtConfig;
+class OwtFactory;
+class OneWayTranslator;
 
 class Defaults {
  public:
   Defaults();
+  Defaults(const Defaults & other);
   ~Defaults();
   Defaults & setFilterAlgorithm(FilterAlgorithm filterAlgorithm);
   Defaults & setSwitchTimeSecs(double secs);
+
+  Defaults & setFilterConfig(const KalmanOwtConfig &);
+
+  std::unique_ptr<OneWayTranslator> createOwt(FilterAlgorithm::Type fa) const;
  private:
+  template <typename FD>
+  void regOwtFactory(const FD & filterConfig) {
+    regOwtFactory_(new FD(filterConfig));
+  }
+  void regOwtFactory_(OwtFactory * owtFactory);
+
   class Impl;
   const Impl & getImpl() const;
+  Impl & getImpl();
   friend class DeviceTimeTranslator;
   Impl * const pImpl_;
 };
@@ -89,6 +104,16 @@ class DeviceTimeTranslator {
   FilterAlgorithm getCurrentFilterAlgorithm() const;
   void setFilterAlgorithm(FilterAlgorithm filterAlgorithm);
 
+  double getExpectedSwitchingTimeSeconds() const;
+  void setExpectedSwitchingTimeSeconds(double expectedSwitchingTimeSeconds);
+
+
+  /**
+   * Get current one way translator.
+   * Intended for testing only.
+   * @return the current one way translator. Stays valid until the next update. Can be null.
+   */
+  const OneWayTranslator * getCurrentOwt() const;
  private:
   void configCallback(DeviceTimeTranslatorConfig &config, uint32_t level);
 
@@ -133,6 +158,22 @@ class DeviceTimeUnwrapperAndTranslator {
   void setFilterAlgorithm(FilterAlgorithm filterAlgorithm) {
     translator.setFilterAlgorithm(filterAlgorithm);
   }
+
+  double getExpectedSwitchingTimeSeconds() const {
+    return translator.getExpectedSwitchingTimeSeconds();
+  }
+  void setExpectedSwitchingTimeSeconds(double expectedSwitchingTimeSeconds) {
+    translator.setExpectedSwitchingTimeSeconds(expectedSwitchingTimeSeconds);
+  }
+
+  /**
+   * Get current one way translator.
+   * Intended for testing only.
+   * @return the current one way translator. Stays valid until the next update. Can be null.
+   */
+  const OneWayTranslator* getCurrentOwt() const {
+    return translator.getCurrentOwt();
+  }
  protected:
   Unwrapper timestampUnwrapper;
   DeviceTimeTranslator translator;
@@ -170,8 +211,8 @@ class UnwrappedDeviceTimeTranslator : public DeviceTimeUnwrapperAndTranslator<Ti
 
 class DefaultDeviceTimeUnwrapperAndTranslatorWithTransmitTime : public DeviceTimeUnwrapperAndTranslatorWithTransmitTime<> {
  public:
-  DefaultDeviceTimeUnwrapperAndTranslatorWithTransmitTime(const WrappingClockParameters & wrappingClockParameters, const NS & nameSpace) :
-    DeviceTimeUnwrapperAndTranslatorWithTransmitTime<>(wrappingClockParameters, nameSpace) {}
+  DefaultDeviceTimeUnwrapperAndTranslatorWithTransmitTime(const WrappingClockParameters & wrappingClockParameters, const NS & nameSpace, const Defaults & defaults = Defaults()) :
+    DeviceTimeUnwrapperAndTranslatorWithTransmitTime<>(wrappingClockParameters, nameSpace, defaults) {}
 };
 
 }

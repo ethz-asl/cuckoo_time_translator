@@ -24,6 +24,7 @@ endif ()
 
 cs_add_library(${PROJECT_NAME}
   src/DeviceTimeTranslator.cpp
+  src/OwtFactory.cpp
   src/RosConsoleBridgeActivator.cpp
 )
 
@@ -42,6 +43,7 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest_gtest(${PROJECT_NAME}-unittest
     test/units.test
     test/TestDeviceTimeTranslator.cpp
+    test/TestDefaults.cpp
     test/test_main.cpp
   )
   target_link_libraries(${PROJECT_NAME}-unittest ${PROJECT_NAME})
