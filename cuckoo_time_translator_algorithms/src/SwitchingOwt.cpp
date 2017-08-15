@@ -17,10 +17,6 @@ SwitchingOwt::SwitchingOwt(const SwitchingOwt& other) :
 {
 }
 
-SwitchingOwt::SwitchingOwt(const double switchingTimeSeconds, const OneWayTranslator & blueprint) :
-  SwitchingOwt(switchingTimeSeconds, [&]() { return blueprint.clone();})
-{
-}
 
 SwitchingOwt::SwitchingOwt(double switchingTimeSeconds, std::function<std::unique_ptr<OneWayTranslator>()> owtFactory) :
   switchingTimeSeconds_(switchingTimeSeconds)
@@ -28,6 +24,11 @@ SwitchingOwt::SwitchingOwt(double switchingTimeSeconds, std::function<std::uniqu
   for(auto & owt : oneWayTranslators_){
     owt = owtFactory();
   }
+}
+
+SwitchingOwt::SwitchingOwt(const double switchingTimeSeconds, const OneWayTranslator & blueprint) :
+  SwitchingOwt(switchingTimeSeconds, [&]() { return blueprint.clone();})
+{
 }
 
 const OneWayTranslator& SwitchingOwt::getCurrentOwt() const {
