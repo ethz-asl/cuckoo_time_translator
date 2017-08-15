@@ -44,7 +44,7 @@ std::unique_ptr<OwtFactory> OwtFactoryImpl<FA, Owt, Config>::clone() const {
 template class OwtFactoryImpl<FilterAlgorithm::Kalman, KalmanOwt, KalmanOwt::Config>;
 
 Defaults & Defaults::setFilterConfig(const KalmanOwtConfig& c) {
-  regFilterConfig(KalmanOwtFactory(c));
+  regOwtFactory(KalmanOwtFactory(c));
   return *this;
 }
 

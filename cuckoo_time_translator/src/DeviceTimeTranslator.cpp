@@ -63,8 +63,8 @@ class Defaults::Impl {
   }
 
   Impl(const Impl& other){
-    for(auto & e : other.owtFactoryReg){
-      owtFactoryReg.emplace(e.first, e.second->clone());
+    for(auto & e : other.owtFactoryReg_){
+      owtFactoryReg_.emplace(e.first, e.second->clone());
     }
   }
 
@@ -81,7 +81,7 @@ class Defaults::Impl {
   }
 
   void regOwtFactory(OwtFactory * owtFactoryPtr) {
-    owtFactoryReg[owtFactoryPtr->getFilterAlgorithm()].reset(owtFactoryPtr);
+    owtFactoryReg_[owtFactoryPtr->getFilterAlgorithm()].reset(owtFactoryPtr);
   }
 
   std::unique_ptr<OneWayTranslator> createOwt(FilterAlgorithm fa) const;
@@ -100,7 +100,7 @@ class Defaults::Impl {
     });
   }
   std::map<std::string, std::function<void(ros::NodeHandle & nh, const std::string & name)>> operations;
-  std::map<FilterAlgorithm::Type, std::unique_ptr<OwtFactory>> owtFactoryReg;
+  std::map<FilterAlgorithm::Type, std::unique_ptr<OwtFactory>> owtFactoryReg_;
 };
 
 Defaults::Defaults() :
@@ -126,7 +126,7 @@ Defaults & Defaults::setSwitchTimeSecs(double secs) {
   return *this;
 }
 
-void Defaults::regFilterConfig_(OwtFactory* owtFactoryPtr) {
+void Defaults::regOwtFactory_(OwtFactory* owtFactoryPtr) {
   getImpl().regOwtFactory(owtFactoryPtr);
 }
 
@@ -139,8 +139,8 @@ const Defaults::Impl& Defaults::getImpl() const {
 }
 
 std::unique_ptr<OneWayTranslator> Defaults::Impl::createOwt(FilterAlgorithm fa) const {
-  auto e = owtFactoryReg.find(fa);
-  if(e != owtFactoryReg.end()){
+  auto e = owtFactoryReg_.find(fa);
+  if(e != owtFactoryReg_.end()){
     return e->second->createOwt();
   } else {
     ROS_ERROR("Unknown device time filter algorithm : %u. Falling back to no filter (NopOwt).", static_cast<unsigned>(fa));

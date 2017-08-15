@@ -75,10 +75,10 @@ class Defaults {
   std::unique_ptr<OneWayTranslator> createOwt(FilterAlgorithm::Type fa) const;
  private:
   template <typename FD>
-  void regFilterConfig(const FD & filterConfig) {
-    regFilterConfig_(new FD(filterConfig));
+  void regOwtFactory(const FD & filterConfig) {
+    regOwtFactory_(new FD(filterConfig));
   }
-  void regFilterConfig_(OwtFactory * owtFactory);
+  void regOwtFactory_(OwtFactory * owtFactory);
 
   class Impl;
   const Impl & getImpl() const;
