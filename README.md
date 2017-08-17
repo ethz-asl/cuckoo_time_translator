@@ -24,3 +24,4 @@ Because **synchronization** refers to what one does to clocks to make them run a
 * https://github.com/ethz-asl/pointgrey_camera_driver/tree/feature/useCuckooTimeTranslator
 * https://github.com/ethz-asl/LMS1xx/tree/feature/useCuckooTimeTranslator
   * This changes the start time assignment (was necessary for our LMS151 devices): https://github.com/ethz-asl/LMS1xx/tree/feature/useStartTimestampFromPreviousPackage
+* https://github.com/ethz-asl/urg_node/tree/feature/useHardwareTime
