@@ -15,7 +15,10 @@ Please note that typically this cannot be carried out perfectly.
 There will be noise in the translation and an unknown bias (offset), such as the offset from the blue to the green points above.
 In particular in the one way case.
 However, in many applications it is possible to calibrate for the offset using additional information such at sensor measurements.
-This step is beyond this repository.
+Howevere, this step is beyond this repository. If you need that the following repositories might be interesting for you:
+* [ethz-asl/hand_eye_calibration](https://github.com/ethz-asl/hand_eye_calibration)
+* [ethz-asl/kalibr](https://github.com/ethz-asl/kalibr/)
+* [ethz-asl/oomact](https://github.com/ethz-asl/oomact/)
 
 ### Why call it translation rather than synchronization? 
 Because **synchronization** refers to what one does to clocks to make them run at the same speed and yield similar times when read at the same time (as for instance NTP and PTP do to computer clocks), whereas the algorithms in this repository are trying to only **translate** the time of one clock for a given event into the another clock's time for the *same* event and not touch the clocks at all.
