@@ -4,7 +4,7 @@
 ### Algorithms for translating times emitted by other (cheap) clocks into local system time
 The dominant application is translating hardware timestamps of a sensor into the system time of a receiving computer system.
 
-!["Point Grey Chameleon3 timing"](https://github.com/ethz-asl/cuckoo_time_translator/wiki/images/chameleon10kHz-with-legend.png "Point Grey Chameleon3 timing")
+[!["Point Grey Chameleon3 timing"](https://github.com/ethz-asl/cuckoo_time_translator/wiki/images/chameleon10kHz-with-legend.png "Point Grey Chameleon3 timing")](https://github.com/ethz-asl/cuckoo_time_translator/wiki#example-plot)
 
 
 ### Scope
