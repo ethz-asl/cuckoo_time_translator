@@ -26,3 +26,8 @@ Because **synchronization** refers to what one does to clocks to make them run a
 
 ### Examples for how to use it in a ROS sensor driver:
 See [usage examples](https://github.com/ethz-asl/cuckoo_time_translator/wiki#usage-examples-ros-sensor-drivers).
+
+
+
+## Acknowledgments
+This work is supported in part by the European Union's Seventh Framework Programme (FP7/2007-2013) under grant #610603 (EUROPA2) and the European Union's Horizon 2020 research and innovation programme under grant agreement No 644227 (FLOURISH).
