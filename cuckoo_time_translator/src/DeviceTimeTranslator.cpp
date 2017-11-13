@@ -16,7 +16,7 @@
 #include <cuckoo_time_translator/ConvexHullOwt.h>
 #include <cuckoo_time_translator/KalmanOwt.h>
 #include <cuckoo_time_translator/SwitchingOwt.h>
-#include <cuckoo_time_translator/OwtFactory.hpp>
+#include <cuckoo_time_translator/OwtFactory.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <cuckoo_time_translator/DeviceTimeTranslatorConfig.h>

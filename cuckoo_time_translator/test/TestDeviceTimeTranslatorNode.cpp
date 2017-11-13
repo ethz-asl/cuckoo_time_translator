@@ -57,8 +57,7 @@ void changeAlgorithm(FilterAlgorithm fa){
   filterAlgoParam.value = static_cast<int>(fa);
   conf.ints.push_back(filterAlgoParam);
 
-  auto ret = ros::service::call("/device_time/set_parameters", srv_req, srv_resp);
-  std::cout << "ret=" << ret << std::endl; // XXX: debug output of ret
+  ros::service::call("/device_time/set_parameters", srv_req, srv_resp);
 }
 
 
