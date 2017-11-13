@@ -2,7 +2,7 @@
 #include <cuckoo_time_translator/KalmanOwt.h>
 
 #include <cuckoo_time_translator/DeviceTimeTranslator.h>
-#include <cuckoo_time_translator/OwtFactory.hpp>
+#include <cuckoo_time_translator/OwtFactory.h>
 
 namespace cuckoo_time_translator {
 
