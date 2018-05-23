@@ -60,6 +60,7 @@ void exportTimestampOwts()
 
   class_<SwitchingOwt, bases<OneWayTranslator>, boost::noncopyable>("SwitchingOwt", init<double, const OneWayTranslator &>())
     .def("getSwitchingTimeSeconds", &SwitchingOwt::getSwitchingTimeSeconds, "double getSwitchingTimeSeconds() const")
+    .def("getCurrentOwt", static_cast<OneWayTranslator& (SwitchingOwt::*)()>(&SwitchingOwt::getCurrentOwt), return_internal_reference<>(), "OneWayTranslator& getCurrentOwt()")
     ;
 
 }
