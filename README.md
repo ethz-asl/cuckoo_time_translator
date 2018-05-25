@@ -20,13 +20,20 @@ Howevere, this step is beyond this repository. If you need that the following re
 * [ethz-asl/kalibr](https://github.com/ethz-asl/kalibr/)
 * [ethz-asl/oomact](https://github.com/ethz-asl/oomact/)
 
+
 ### Why call it translation rather than synchronization? 
 Because **synchronization** refers to what one does to clocks to make them run at the same speed and yield similar times when read at the same time (as for instance NTP and PTP do to computer clocks), whereas the algorithms in this repository are trying to only **translate** the time of one clock for a given event into the another clock's time for the *same* event and not touch the clocks at all.
 
 
+### Dependencies
+* [caktin_simple](https://github.com/catkin/catkin_simple)
+* ros-*-cmake-modules
+* ros-*-rosconsole-bridge
+* ros-*-dynamic-reconfigure
+
+
 ### Examples for how to use it in a ROS sensor driver:
 See [usage examples](https://github.com/ethz-asl/cuckoo_time_translator/wiki#usage-examples-ros-sensor-drivers).
-
 
 
 ## Acknowledgments
