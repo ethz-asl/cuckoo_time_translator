@@ -6,7 +6,7 @@
 #define AASSERT(x, message) \
   do { \
     if (!(x)) { \
-      logError("ASSERTION %s FAILED: %s (%s:%d)", #x, message, __FILE__, __LINE__); \
+      CONSOLE_BRIDGE_logError("ASSERTION %s FAILED: %s (%s:%d)", #x, message, __FILE__, __LINE__); \
       throw std::runtime_error(message); \
     } \
   } while (0)

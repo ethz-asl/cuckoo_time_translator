@@ -28,11 +28,11 @@ void WrappingClockParameters::checkNewDeviceStamp(uint64_t wrapsCounter, uint64_
   maxStamp_ = std::max(newDeviceStamp, maxStamp_);
   if (newDeviceStamp >= wrapAroundNumber_){
     const uint64_t newWrapAroundNumber = newDeviceStamp + 1;
-    logError("newDeviceStamp=%u is larger than wrapAroundNumber=%lu -> adapting wrapAroundNumber to %lu!", newDeviceStamp, wrapAroundNumber_, newWrapAroundNumber);
+    CONSOLE_BRIDGE_logError("newDeviceStamp=%u is larger than wrapAroundNumber=%lu -> adapting wrapAroundNumber to %lu!", newDeviceStamp, wrapAroundNumber_, newWrapAroundNumber);
     wrapAroundNumber_ = newWrapAroundNumber;
   }
   if(wrapsCounter % 10 == 9 && uint64_t(maxStamp_) < wrapAroundNumber_ * 2u / 3u){
-    logWarn("Last maxStamp=%u, suspiciously small! Maybe it wraps in fact earlier? (wrapAroundNumber=%lu)",  maxStamp_, wrapAroundNumber_);
+    CONSOLE_BRIDGE_logWarn("Last maxStamp=%u, suspiciously small! Maybe it wraps in fact earlier? (wrapAroundNumber=%lu)",  maxStamp_, wrapAroundNumber_);
   }
 }
 
