@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#include "AbstractAssert.h"
 #include "ClockParameters.h"
 
 // TODO (c++11) remove this

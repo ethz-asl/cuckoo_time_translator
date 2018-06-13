@@ -3,10 +3,19 @@
 
 #include <console_bridge/console.h>
 
+#ifdef DEFINE_LOGGING_MACROS
+
+#define logError(fmt, ...)  CONSOLE_BRIDGE_logError(fmt, ##__VA_ARGS__) 
+#define logWarn(fmt, ...)   CONSOLE_BRIDGE_logWarn(fmt, ##__VA_ARGS__)
+#define logInform(fmt, ...) CONSOLE_BRIDGE_logInform(fmt, ##__VA_ARGS__)
+#define logDebug(fmt, ...)  CONSOLE_BRIDGE_logDebug(fmt, ##__VA_ARGS__)
+
+#endif
+
 #define AASSERT(x, message) \
   do { \
     if (!(x)) { \
-      CONSOLE_BRIDGE_logError("ASSERTION %s FAILED: %s (%s:%d)", #x, message, __FILE__, __LINE__); \
+      logError("ASSERTION %s FAILED: %s (%s:%d)", #x, message, __FILE__, __LINE__); \
       throw std::runtime_error(message); \
     } \
   } while (0)
