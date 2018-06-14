@@ -5,11 +5,7 @@ find_package(catkin_simple REQUIRED)
 catkin_simple()
 
 find_package(Eigen REQUIRED)
-
 find_package(console_bridge REQUIRED)
-if(console_bridge_VERSION GREATER 0.3.0)
-  add_definitions(-DDEFINE_LOGGING_MACROS)
-endif ()
 
 include_directories(
   ${console_bridge_INCLUDE_DIRS}

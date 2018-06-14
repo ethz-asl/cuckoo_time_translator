@@ -1,21 +1,12 @@
 #ifndef H7E81A0F8_04E4_435D_8F39_103889A163E8
 #define H7E81A0F8_04E4_435D_8F39_103889A163E8
 
-#include <console_bridge/console.h>
-
-#ifdef DEFINE_LOGGING_MACROS
-
-#define logError(fmt, ...)  CONSOLE_BRIDGE_logError(fmt, ##__VA_ARGS__) 
-#define logWarn(fmt, ...)   CONSOLE_BRIDGE_logWarn(fmt, ##__VA_ARGS__)
-#define logInform(fmt, ...) CONSOLE_BRIDGE_logInform(fmt, ##__VA_ARGS__)
-#define logDebug(fmt, ...)  CONSOLE_BRIDGE_logDebug(fmt, ##__VA_ARGS__)
-
-#endif
+#include "Logging.h"
 
 #define AASSERT(x, message) \
   do { \
     if (!(x)) { \
-      logError("ASSERTION %s FAILED: %s (%s:%d)", #x, message, __FILE__, __LINE__); \
+      CUCKOO_TIME_TRANSLATOR_logError("ASSERTION %s FAILED: %s (%s:%d)", #x, message, __FILE__, __LINE__); \
       throw std::runtime_error(message); \
     } \
   } while (0)
