@@ -1,5 +1,5 @@
-#ifndef CUCKOO_TIME_TRANSLATOR_LOGGING
-#define CUCKOO_TIME_TRANSLATOR_LOGGING
+#ifndef HCEF9D5FC_9095_462B_B900_048DD967629F
+#define HCEF9D5FC_9095_462B_B900_048DD967629F
 
 #include <console_bridge/console.h>
 
@@ -7,7 +7,7 @@
 
 #define CUCKOO_TIME_TRANSLATOR_logError(fmt, ...)  logError(fmt, ##__VA_ARGS__) 
 #define CUCKOO_TIME_TRANSLATOR_logWarn(fmt, ...)   logWarn(fmt, ##__VA_ARGS__)
-#define CUCKOO_TIME_TRANSLATOR_logInform(fmt, ...) ClogInform(fmt, ##__VA_ARGS__)
+#define CUCKOO_TIME_TRANSLATOR_logInform(fmt, ...) logInform(fmt, ##__VA_ARGS__)
 #define CUCKOO_TIME_TRANSLATOR_logDebug(fmt, ...)  logDebug(fmt, ##__VA_ARGS__)
 
 #else
@@ -19,4 +19,4 @@
 
 #endif
 
-#endif /* CUCKOO_TIME_TRANSLATOR_LOGGING */
+#endif /* HCEF9D5FC_9095_462B_B900_048DD967629F */
