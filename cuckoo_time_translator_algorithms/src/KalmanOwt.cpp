@@ -3,7 +3,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <console_bridge/console.h>
 #include <cuckoo_time_translator/AbstractAssert.h>
 
 namespace cuckoo_time_translator {
@@ -78,7 +77,7 @@ LocalTime KalmanOwt::updateAndTranslateToLocalTimestamp(const RemoteTime remoteT
     const double mahalDistance = sqrt(measurementResidual*measurementResidual*(1.0/S));
 
     if(config.outlierThreshold && mahalDistance > config.outlierThreshold){
-      logWarn("KalmanOwt: local_time=%f, remote_time=%f -> measurement_residual=%g, mahal_distance=%g!", localTimeSecs, remoteTimeTics, measurementResidual, mahalDistance);
+      CUCKOO_TIME_TRANSLATOR_logWarn("KalmanOwt: local_time=%f, remote_time=%f -> measurement_residual=%g, mahal_distance=%g!", localTimeSecs, remoteTimeTics, measurementResidual, mahalDistance);
     } else {
       x_ = x_ + K * measurementResidual;
       P_ = (Eigen::Matrix2d::Identity() - K * H_) * P_;

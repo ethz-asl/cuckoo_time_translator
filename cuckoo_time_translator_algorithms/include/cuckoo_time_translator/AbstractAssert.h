@@ -1,12 +1,12 @@
 #ifndef H7E81A0F8_04E4_435D_8F39_103889A163E8
 #define H7E81A0F8_04E4_435D_8F39_103889A163E8
 
-#include <console_bridge/console.h>
+#include "Logging.h"
 
 #define AASSERT(x, message) \
   do { \
     if (!(x)) { \
-      logError("ASSERTION %s FAILED: %s (%s:%d)", #x, message, __FILE__, __LINE__); \
+      CUCKOO_TIME_TRANSLATOR_logError("ASSERTION %s FAILED: %s (%s:%d)", #x, message, __FILE__, __LINE__); \
       throw std::runtime_error(message); \
     } \
   } while (0)
