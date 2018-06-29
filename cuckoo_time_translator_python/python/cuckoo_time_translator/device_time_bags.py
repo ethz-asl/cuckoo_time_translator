@@ -1,7 +1,4 @@
-from __future__ import print_function
-
 import os
-import sys
 
 import pickle
 import rosbag
@@ -12,6 +9,7 @@ from tools import *
 
 DefaultTopic = '/device_time'
 
+
 def guessTopics(bagFile):
   with rosbag.Bag(bagFile) as bag:
     found = []
@@ -21,8 +19,10 @@ def guessTopics(bagFile):
 
   return found
 
+
 class DeviceTimeStream():
-  def __init__(self, bagFile, topic, invalidate = False):
+
+  def __init__(self, bagFile, topic, invalidate=False):
     eventsFile = os.path.realpath(bagFile) + topic.replace("/", "_") + ".p"
     if os.path.exists(eventsFile):
         if invalidate:
@@ -31,7 +31,7 @@ class DeviceTimeStream():
             verbose("Loading from " + eventsFile)
             self.__dict__ = pickle.load(open(eventsFile, "rb"))
             return
-    
+
     bag = rosbag.Bag(bagFile)
 
     self.filtered_hw_times = TimestampSeries()

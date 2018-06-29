@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 import os
-from cuckoo_time_translator import *
+from cuckoo_time_translator.algorithms import *
 
 import unittest
 
 from nose import SkipTest
 
+
 class TestTimes(unittest.TestCase):
+
   def testConversions(self):
     l = LocalTime(3)
     self.assertEqual(3, float(l))
-
 
   def _testFilter(self, c):
     self.assertFalse(c.isReady())
@@ -28,6 +29,7 @@ class TestTimes(unittest.TestCase):
 
   def testKalman(self):
     self._testFilter(KalmanOwt())
+
 
 if __name__ == '__main__':
     unittest.main()
