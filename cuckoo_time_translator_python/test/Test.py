@@ -13,7 +13,7 @@ class TestTimes(unittest.TestCase):
     l = LocalTime(3)
     self.assertEqual(3, float(l))
 
-  def _testFilter(self, c):
+  def _testOwt(self, c):
     self.assertFalse(c.isReady())
     l = c.updateAndTranslateToLocalTimestamp(RemoteTime(5), LocalTime(4))
     self.assertEqual(LocalTime, type(l))
@@ -25,10 +25,10 @@ class TestTimes(unittest.TestCase):
     self.assertEqual(LocalTime(5), c.translateToLocalTimestamp(RemoteTime(6)))
 
   def testConvexHull(self):
-    self._testFilter(ConvexHullOwt())
+    self._testOwt(ConvexHullOwt())
 
   def testKalman(self):
-    self._testFilter(KalmanOwt())
+    self._testOwt(KalmanOwt())
 
 
 if __name__ == '__main__':

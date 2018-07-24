@@ -4,7 +4,7 @@ import cuckoo_time_translator.algorithms as algorithms
 from cuckoo_time_translator.algorithms import LocalTime, RemoteTime
 
 
-class TimestampFilter:
+class TimestampOwt:
 
   def __init__(self, owt, batch=False, switchTime=None):
     if switchTime:
@@ -49,13 +49,13 @@ class TimestampFilter:
     return self.owt.getNameAndConfigString() + ": " + self.owt.getStateString()
 
 
-class ConvexHullFilter (TimestampFilter):
+class ConvexHullOwt (TimestampOwt):
 
   def __init__(self, *args, **kwargs):
-    TimestampFilter.__init__(self, algorithms.ConvexHullOwt(), *args, **kwargs)
+    TimestampOwt.__init__(self, algorithms.ConvexHullOwt(), *args, **kwargs)
 
 
-class KalmanFilter(TimestampFilter):
+class KalmanOwt(TimestampOwt):
 
   def __init__(self, outlierThreshold=None, sigmaSkew=None, *args, **kwargs):
     k = algorithms.KalmanOwt()
@@ -72,15 +72,15 @@ class KalmanFilter(TimestampFilter):
     self.sigmaSkew = c.sigmaSkew
 
     k.setConfig(c)
-    TimestampFilter.__init__(self, k, *args, **kwargs)
+    TimestampOwt.__init__(self, k, *args, **kwargs)
 
     self._addParamNames(extra_params)
 
 
-class LeastSquaresFilter(TimestampFilter):
+class LeastSquaresOwt(TimestampOwt):
 
   def __init__(self):
-    TimestampFilter.__init__(self, None, batch=True)
+    TimestampOwt.__init__(self, None, batch=True)
 
   def apply(self, hwTimes, receiveTimes):
     assert(len(hwTimes) > 2)
@@ -93,7 +93,7 @@ class LeastSquaresFilter(TimestampFilter):
     return correctedhwTimes
 
   def getConfigString(self, showDefaults=False):
-    return "LeastSquaresFilter()"
+    return "LeastSquaresOwt()"
 
   def getConfigAndStateString(self):
     return self.getConfigString() + ": offset=%f, skew=%f" % (self.offset, self.skew)
