@@ -10,7 +10,7 @@ from cuckoo_time_translator.batch_algo import printDelayStat
 
 from cuckoo_time_translator.tools import *
 
-OwtsDefault = 'ConvexHullOwt(switchTime = 10), KalmanOwt(), ConvexHullOwt(switchTime = 100)'
+OwtsDefault = 'KalmanOwt(), ConvexHullOwt(switchTime = 100)'
 
 if __name__ == '__main__':
   import argparse
