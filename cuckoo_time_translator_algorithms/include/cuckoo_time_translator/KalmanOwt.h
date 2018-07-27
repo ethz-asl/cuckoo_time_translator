@@ -15,7 +15,7 @@ struct KalmanOwtConfig {
   double sigmaInitSkew = 1e-3;
   double sigmaOffset = 2e-3;
   double sigmaSkew = 2e-6;
-  double updateRate = 0.5;
+  double updateCooldownSecs = 0.5;
   double outlierThreshold = 1.0;
 };
 
@@ -51,7 +51,7 @@ class KalmanOwt : public OneWayTranslator
   Eigen::Matrix<double, 1, 2> H_;
   bool isInitialized_;
   double lastUpdateDeviceTime_;
-  double dt_;
+  double lastUpdateDt_;
 };
 
 }

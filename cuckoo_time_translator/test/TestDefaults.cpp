@@ -15,9 +15,9 @@ TEST(Defaults, KalmanDefaults) {
   ASSERT_TRUE(k);
 
   KalmanOwtConfig kc;
-  EXPECT_EQ(kc.updateRate, k->getConfig().updateRate);
+  EXPECT_EQ(kc.updateCooldownSecs, k->getConfig().updateCooldownSecs);
 
-  kc.updateRate += 1.0;
+  kc.updateCooldownSecs += 1.0;
 
   d.setFilterConfig(kc);
 
@@ -26,5 +26,5 @@ TEST(Defaults, KalmanDefaults) {
   k = dynamic_cast<KalmanOwt*>(uk.get());
   ASSERT_TRUE(k);
 
-  EXPECT_EQ(kc.updateRate, k->getConfig().updateRate);
+  EXPECT_EQ(kc.updateCooldownSecs, k->getConfig().updateCooldownSecs);
 }

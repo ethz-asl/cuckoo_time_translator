@@ -29,30 +29,33 @@ find_package(Boost REQUIRED COMPONENTS python)
 include_directories(${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 catkin_python_setup()
+
 cs_add_library(${PROJECT_NAME}
   src/module.cpp
 )
+
 string(REGEX REPLACE "_python$" "" LIB_OUTPUT_DIR ${CATKIN_PACKAGE_PYTHON_DESTINATION})
-set_target_properties(${PROJECT_NAME}
-    PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${LIB_OUTPUT_DIR}
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${LIB_OUTPUT_DIR}
 )
 
 if (APPLE)
-    set_target_properties(${PROJECT_NAME}
-        PROPERTIES
-            SUFFIX ".so" # This is apparently needed for Darvin. But why?
-    )
+  set_target_properties(${PROJECT_NAME} PROPERTIES
+    SUFFIX ".so" # This is apparently needed for Darvin. But why
+  )
 endif ()
 
 target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARY} ${Boost_LIBRARIES})
 
-cs_install()
+install(FILES ${CATKIN_DEVEL_PREFIX}/${LIB_OUTPUT_DIR}/lib${PROJECT_NAME}.so
+  DESTINATION ${LIB_OUTPUT_DIR}
+)
+
 cs_export()
 
 if(CATKIN_ENABLE_TESTING)
-catkin_add_nosetests(
-  test/Test.py
-  DEPENDENCIES ${PROJECT_NAME}
-)
+  catkin_add_nosetests(
+    test/Test.py
+    DEPENDENCIES ${PROJECT_NAME}
+  )
 endif()

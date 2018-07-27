@@ -49,7 +49,7 @@ void exportTimestampOwts()
     .def_readwrite("sigmaInitSkew", &KalmanOwt::Config::sigmaInitSkew)
     .def_readwrite("sigmaOffset", &KalmanOwt::Config::sigmaOffset)
     .def_readwrite("sigmaSkew", &KalmanOwt::Config::sigmaSkew)
-    .def_readwrite("updateRate", &KalmanOwt::Config::updateRate)
+    .def_readwrite("updateCooldownSecs", &KalmanOwt::Config::updateCooldownSecs)
     .def_readwrite("outlierThreshold", &KalmanOwt::Config::outlierThreshold)
   ;
 
