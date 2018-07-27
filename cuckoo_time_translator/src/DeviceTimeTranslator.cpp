@@ -20,7 +20,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <cuckoo_time_translator/DeviceTimeTranslatorConfig.h>
-#include <cuckoo_time_translator/DeviceTimestamp.h>
+#include <cuckoo_time_translator_msgs/DeviceTimestamp.h>
 #pragma GCC diagnostic pop
 
 namespace cuckoo_time_translator {
