@@ -58,7 +58,7 @@ class NS {
   std::string nameSpace_;
 };
 
-class KalmanOwtConfig;
+struct KalmanOwtConfig;
 class OwtFactory;
 class OneWayTranslator;
 
