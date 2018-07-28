@@ -15,11 +15,9 @@
   <depend>driver_base</depend>
   <depend>dynamic_reconfigure</depend>
 
-  <build_depend>message_generation</build_depend>
-  <depend>std_msgs</depend>
-  <exec_depend>message_runtime</exec_depend>
-
+  <depend>cuckoo_time_translator_msgs</depend>
   <depend>cuckoo_time_translator_algorithms</depend>
+
   <depend>rosconsole_bridge</depend>
 
   <test_depend>rostest</test_depend>

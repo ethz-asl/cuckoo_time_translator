@@ -12,7 +12,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "ros/ros.h"
-#include <cuckoo_time_translator/DeviceTimestamp.h>
+#include <cuckoo_time_translator_msgs/DeviceTimestamp.h>
 #pragma GCC diagnostic pop
 
 #include "../src/MockCuckooDeviceDriver.h"
