@@ -3,7 +3,7 @@
   <name>cuckoo_time_translator_algorithms</name>
   <version>0.0.1</version>
   <description>
-    Algorithms for translating times emitted by other (cheap) clocks into local system time.
+    Algorithms for translating times emitted by remote (cheap) clocks into local system time.
     The dominant application is translating hardware timestamps of a sensor into the system time of a receiving computer system.
   </description>
 
