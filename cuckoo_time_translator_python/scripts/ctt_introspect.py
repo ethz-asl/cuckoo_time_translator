@@ -83,7 +83,9 @@ if __name__ == '__main__':
     if not args.dontPlotReceiveTimes:
       addToPlot(ds.receive_times, "receive times", "r")
     if not args.dontPlotPreTranslated:
-      addToPlot(ds.translated_hw_times, "pre-translated", "g")
+      addToPlot(ds.translated_hw_times, "pre-translated" + (" (+ zero offset)" if ds.zeroOffsetAllTheTime else " + offset"), "g")
+      if not ds.zeroOffsetAllTheTime:
+          addToPlot(ds.translated_hw_times_without_offset, "pre-translated without offset", "b")
 
     owtColors = ['m', 'grey', 'cyan', 'k', 'orange']
     for i, owt in enumerate(hwOwts):

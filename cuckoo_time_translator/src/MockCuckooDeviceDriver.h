@@ -4,9 +4,11 @@
 #include <cuckoo_time_translator/DeviceTimeTranslator.h>
 #include "MockCuckooClock.h"
 
-namespace ros {
-class NodeHandle;
-}
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#include <dynamic_reconfigure/server.h>
+#include <cuckoo_time_translator/MockCuckooClockConfig.h>
+#pragma GCC diagnostic pop
 
 namespace cuckoo_time_translator {
 
@@ -21,8 +23,15 @@ class MockCuckooDeviceDriver {
 
   void step();
  private:
-  MockCuckooClock cuckooClock;
-  DeviceTimeUnwrapperAndTranslator<TimestampUnwrapperEventOnly> translator;
+  void dynamicReconfigureCallback(const MockCuckooClockConfig &config, int);
+
+  MockCuckooClock cuckooClock_;
+  DeviceTimeUnwrapperAndTranslator<TimestampUnwrapperEventOnly> translator_;
+  double delaySeconds_ = 0;
+  double delaySigmaSeconds_ = 0;
+  double assumedDelaySeconds_ = 0;
+
+  dynamic_reconfigure::Server<MockCuckooClockConfig> srv_;
 };
 
 }
