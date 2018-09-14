@@ -17,7 +17,6 @@
   <buildtool_depend>catkin_simple</buildtool_depend>
 
   <depend>roscpp</depend>
-  <depend>driver_base</depend>
   <depend>dynamic_reconfigure</depend>
 
   <build_depend>message_generation</build_depend>
