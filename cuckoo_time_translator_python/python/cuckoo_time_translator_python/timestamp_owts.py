@@ -1,7 +1,6 @@
 import numpy as np
-import cuckoo_time_translator.algorithms as algorithms
-
-from cuckoo_time_translator.algorithms import LocalTime, RemoteTime
+import cuckoo_time_translator_python.algorithms as algorithms
+from cuckoo_time_translator_python.algorithms import LocalTime, RemoteTime
 
 
 class TimestampOwt:

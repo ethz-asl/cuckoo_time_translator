@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-from cuckoo_time_translator.algorithms import *
+from cuckoo_time_translator_python.algorithms import *
 
 import unittest
 
