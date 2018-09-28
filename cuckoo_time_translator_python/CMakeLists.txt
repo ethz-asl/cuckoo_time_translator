@@ -32,6 +32,7 @@ catkin_python_setup()
 
 cs_add_library(${PROJECT_NAME}
   src/module.cpp
+  NO_AUTO_EXPORT
 )
 
 string(REGEX REPLACE "_python$" "" LIB_OUTPUT_DIR ${CATKIN_PACKAGE_PYTHON_DESTINATION})
