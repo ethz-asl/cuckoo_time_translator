@@ -34,22 +34,20 @@ cs_add_library(${PROJECT_NAME}
   src/module.cpp
   NO_AUTO_EXPORT
 )
-
-string(REGEX REPLACE "_python$" "" LIB_OUTPUT_DIR ${CATKIN_PACKAGE_PYTHON_DESTINATION})
 set_target_properties(${PROJECT_NAME} PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${LIB_OUTPUT_DIR}
+  LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION}
 )
 
 if (APPLE)
   set_target_properties(${PROJECT_NAME} PROPERTIES
-    SUFFIX ".so" # This is apparently needed for Darvin. But why
+    SUFFIX ".so" # This is apparently needed for Darvin. But why?
   )
 endif ()
 
 target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARY} ${Boost_LIBRARIES})
 
-install(FILES ${CATKIN_DEVEL_PREFIX}/${LIB_OUTPUT_DIR}/lib${PROJECT_NAME}.so
-  DESTINATION ${LIB_OUTPUT_DIR}
+install(FILES ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION}/lib${PROJECT_NAME}.so
+  DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}
 )
 
 cs_export()

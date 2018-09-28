@@ -3,12 +3,12 @@ import os
 import sys
 import numpy as np
 
-from cuckoo_time_translator import *
-from cuckoo_time_translator.device_time_bags import *
-from cuckoo_time_translator.timestamp_owts import *
-from cuckoo_time_translator.batch_algo import printDelayStat
+from cuckoo_time_translator_python import *
+from cuckoo_time_translator_python.device_time_bags import *
+from cuckoo_time_translator_python.timestamp_owts import *
+from cuckoo_time_translator_python.batch_algo import printDelayStat
 
-from cuckoo_time_translator.tools import *
+from cuckoo_time_translator_python.tools import *
 
 OwtsDefault = 'KalmanOwt(), ConvexHullOwt(switchTime = 100)'
 
@@ -96,9 +96,9 @@ if __name__ == '__main__':
     for d, lab in zip(delaysToPlot, labels):
       printDelayStat(d, lab)
 
-    from cuckoo_time_translator.plotting import plotMultiDelays, show
+    from cuckoo_time_translator_python.plotting import plotMultiDelays, show
     plotMultiDelays(base_times, delaysToPlot, "time [sec]", labels, markersize=4, colors=colors, fileName=args.output, overwrite=args.force, show=False)
 
   if not args.output:
-    from cuckoo_time_translator.plotting import show
+    from cuckoo_time_translator_python.plotting import show
     show()

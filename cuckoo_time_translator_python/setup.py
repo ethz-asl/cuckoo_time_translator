@@ -6,7 +6,7 @@ from catkin_pkg.python_setup import generate_distutils_setup
 
 # fetch values from package.xml
 setup_args = generate_distutils_setup(
-    packages=['cuckoo_time_translator'],
+    packages=['cuckoo_time_translator_python'],
     package_dir={'':'python'},
     scripts=['scripts/ctt_introspect.py']
   )
