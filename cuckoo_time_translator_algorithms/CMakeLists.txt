@@ -41,6 +41,7 @@ cs_add_library(${PROJECT_NAME}
   src/TimestampUnwrapper.cpp
   src/KalmanOwt.cpp
   src/SwitchingOwt.cpp
+  src/SlidingWindowOwt.cpp
 )
 target_link_libraries(${PROJECT_NAME} ${console_bridge_LIBRARIES})
 
