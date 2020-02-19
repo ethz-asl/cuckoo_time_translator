@@ -32,7 +32,8 @@ class OwtFactoryImpl : public OwtFactory, public Config {
 
 typedef OwtFactoryImpl<FilterAlgorithm::Kalman, KalmanOwt, KalmanOwt::Config> KalmanOwtFactory;
 typedef OwtFactoryImpl<FilterAlgorithm::ConvexHull, ConvexHullOwt> ConvexHullOwtFactory;
-typedef OwtFactoryImpl<FilterAlgorithm::ReceiveTimeOnly, NopOwt> ReceiveTimeOnlyOwtFactory;
+typedef OwtFactoryImpl<FilterAlgorithm::ReceiveTimePassThrough, ReceiveTimePassThroughOwt> ReceiveTimePassThroughOwtFactory;
+typedef OwtFactoryImpl<FilterAlgorithm::DeviceTimePassThrough, DeviceTimePassThroughOwt> DeviceTimePassThroughOwtFactory;
 }
 
 #endif /* HA1414207_EF1A_4368_BD21_A56BFFA7D0BB */

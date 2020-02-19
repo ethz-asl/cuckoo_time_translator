@@ -18,34 +18,64 @@ std::unique_ptr<OneWayTranslator> OneWayTranslator::clone() const {
   return std::unique_ptr<OneWayTranslator>(cloneImpl());
 }
 
-NopOwt::~NopOwt() {
+ReceiveTimePassThroughOwt::~ReceiveTimePassThroughOwt() {
 }
 
-LocalTime NopOwt::translateToLocalTimestamp(RemoteTime /*remoteTimeTics*/) const {
-  AASSERT(false, "translateToLocalTimestamp is not implemented in NopOwt!");
+LocalTime ReceiveTimePassThroughOwt::translateToLocalTimestamp(RemoteTime /*remoteTimeTics*/) const {
+  AASSERT(false, "translateToLocalTimestamp is not implemented in ReceiveTimePassThroughOwt!");
   throw ""; // dummy;
 }
 
-LocalTime NopOwt::updateAndTranslateToLocalTimestamp(RemoteTime /*remoteTimeTics*/, LocalTime localTimeSecs) {
+LocalTime ReceiveTimePassThroughOwt::updateAndTranslateToLocalTimestamp(RemoteTime /*remoteTimeTics*/, LocalTime localTimeSecs) {
   return localTimeSecs;
 }
 
-bool NopOwt::isReadyToTranslate() const {
+bool ReceiveTimePassThroughOwt::isReadyToTranslate() const {
   return true;
 }
 
-void NopOwt::printNameAndConfig(std::ostream& o) const {
-  o << "NopOwt()";
+void ReceiveTimePassThroughOwt::printNameAndConfig(std::ostream& o) const {
+  o << "ReceiveTimePassThroughOwt()";
 }
 
-void NopOwt::printState(std::ostream& /*o*/) const {
+void ReceiveTimePassThroughOwt::printState(std::ostream& /*o*/) const {
 }
 
-void NopOwt::reset() {
+void ReceiveTimePassThroughOwt::reset() {
 }
 
-NopOwt* NopOwt::cloneImpl() const {
-  return new NopOwt();
+ReceiveTimePassThroughOwt* ReceiveTimePassThroughOwt::cloneImpl() const {
+  return new ReceiveTimePassThroughOwt();
 }
+
+DeviceTimePassThroughOwt::~DeviceTimePassThroughOwt() {
+}
+
+LocalTime DeviceTimePassThroughOwt::translateToLocalTimestamp(RemoteTime remoteTimeTics) const {
+  return LocalTime(static_cast<double>(remoteTimeTics));
+}
+
+LocalTime DeviceTimePassThroughOwt::updateAndTranslateToLocalTimestamp(RemoteTime /*remoteTimeTics*/, LocalTime localTimeSecs) {
+  return localTimeSecs;
+}
+
+bool DeviceTimePassThroughOwt::isReadyToTranslate() const {
+  return true;
+}
+
+void DeviceTimePassThroughOwt::printNameAndConfig(std::ostream& o) const {
+  o << "DeviceTimePassThroughOwt()";
+}
+
+void DeviceTimePassThroughOwt::printState(std::ostream& /*o*/) const {
+}
+
+void DeviceTimePassThroughOwt::reset() {
+}
+
+DeviceTimePassThroughOwt* DeviceTimePassThroughOwt::cloneImpl() const {
+  return new DeviceTimePassThroughOwt();
+}
+
 
 } /* namespace cuckoo_time_translator */

@@ -49,6 +49,7 @@ Defaults & Defaults::setFilterConfig(const KalmanOwtConfig& c) {
 }
 
 template class OwtFactoryImpl<FilterAlgorithm::ConvexHull, ConvexHullOwt>;
-template class OwtFactoryImpl<FilterAlgorithm::ReceiveTimeOnly, NopOwt>;
+template class OwtFactoryImpl<FilterAlgorithm::ReceiveTimePassThrough, ReceiveTimePassThroughOwt>;
+template class OwtFactoryImpl<FilterAlgorithm::DeviceTimePassThrough, DeviceTimePassThroughOwt>;
 
 }

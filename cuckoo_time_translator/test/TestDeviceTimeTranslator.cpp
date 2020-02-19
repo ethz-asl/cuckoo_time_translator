@@ -30,7 +30,7 @@ TEST(DeviceTimeTranslator, DefaultDeviceTimeUnwrapperAndTranslatorWithTransmitTi
 
 TEST(DeviceTimeTranslator, UnwrappedDeviceTimeTranslatorNoTranslation) {
   UnwrappedDeviceTimeTranslator translator({100.0}, "");
-  translator.setFilterAlgorithm(FilterAlgorithm::ReceiveTimeOnly);
+  translator.setFilterAlgorithm(FilterAlgorithm::ReceiveTimePassThrough);
   EXPECT_EQ(10.0, translator.update(100ul, ros::Time(10.0)).toSec());
   EXPECT_EQ(110.0, translator.update(1000ul, ros::Time(110.0)).toSec());
   EXPECT_EQ(120.0, translator.update(0ul, ros::Time(120.0)).toSec());

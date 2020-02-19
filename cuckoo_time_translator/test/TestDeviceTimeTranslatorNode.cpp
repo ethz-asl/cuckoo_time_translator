@@ -80,7 +80,7 @@ TEST(DeviceTimeTranslator, ReceiveStamps) {
   EXPECT_NEAR(expectedOffset.toSec(), owt.getOffset(), 0.5);
   EXPECT_NEAR(MockCuckooDeviceDriver::kSkew, owt.getSkew(), 0.01);
 
-  EXPECT_EQ(FilterAlgorithm::ReceiveTimeOnly, msgs.back().filterAlgo.type);
+  EXPECT_EQ(FilterAlgorithm::ReceiveTimePassThrough, msgs.back().filterAlgo.type);
 
   clear();
   ASSERT_EQ(msgs.size(), 0);
