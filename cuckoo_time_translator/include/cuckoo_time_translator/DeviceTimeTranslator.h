@@ -91,7 +91,7 @@ class DeviceTimeTranslator {
  public:
   /**
    * @param nameSpace used for topics and parameters
-   * @param defaults defaults for the configuration parameters (filter_algo, switching_time)
+   * @param defaults defaults for the configuration parameters (filter_algo, switch_time)
    */
   DeviceTimeTranslator(const NS & nameSpace, const Defaults & defaults);
 
