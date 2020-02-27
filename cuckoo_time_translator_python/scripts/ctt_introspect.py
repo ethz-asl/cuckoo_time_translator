@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     if baselineOwt:
       base_times = np.array(baselineOwt.apply(ds.raw_hw_times, ds.receive_times))
-      info("Baseline owt after translation: " + baselineOwt.getConfigAndStateString())
+      info("Baseline OWT after translation: " + baselineOwt.getConfigAndStateString())
 
     delaysToPlot = []
     labels = []

@@ -41,13 +41,14 @@ class OneWayTranslator {
   virtual OneWayTranslator* cloneImpl() const = 0;
 };
 
+
 /**
- * The No Operation One Way Translator does no translation at all.
- * I.e. it passes the receive time through.
+ * The receive time pass through One Way Translator does ignore the device time and yields the receive time.
+ * This implies that translateToLocalTimestamp is not implemented (throws) because no receive time is available.
  */
-class NopOwt : public OneWayTranslator {
+class ReceiveTimePassThroughOwt : public OneWayTranslator {
  public:
-  virtual ~NopOwt();
+  virtual ~ReceiveTimePassThroughOwt();
   virtual LocalTime translateToLocalTimestamp(RemoteTime remoteTimeTics) const override;
   virtual LocalTime updateAndTranslateToLocalTimestamp(RemoteTime remoteTimeTics, LocalTime localTimeSecs) override;
   virtual bool isReadyToTranslate() const override;
@@ -56,8 +57,29 @@ class NopOwt : public OneWayTranslator {
   virtual void printNameAndConfig(std::ostream & o) const override;
   virtual void printState(std::ostream & o) const override;
  protected:
-  virtual NopOwt* cloneImpl() const override;
+  virtual ReceiveTimePassThroughOwt* cloneImpl() const override;
 };
+
+//TODO cleanup: remove all traces of NopOwt.
+typedef ReceiveTimePassThroughOwt NopOwt; // For backwards compatibility
+
+/**
+ * The device time pass through One Way Translator does ignore the receive time and yields the device time.
+ */
+class DeviceTimePassThroughOwt : public OneWayTranslator {
+ public:
+  virtual ~DeviceTimePassThroughOwt();
+  virtual LocalTime translateToLocalTimestamp(RemoteTime remoteTimeTics) const override;
+  virtual LocalTime updateAndTranslateToLocalTimestamp(RemoteTime remoteTimeTics, LocalTime localTimeSecs) override;
+  virtual bool isReadyToTranslate() const override;
+  virtual void reset() override;
+
+  virtual void printNameAndConfig(std::ostream & o) const override;
+  virtual void printState(std::ostream & o) const override;
+ protected:
+  virtual DeviceTimePassThroughOwt* cloneImpl() const override;
+};
+
 
 } /* namespace cuckoo_time_translator */
 
