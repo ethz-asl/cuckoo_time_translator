@@ -57,9 +57,10 @@ NS::NS(const char* nameSpace, bool appendDeviceTimeSubnamespace)
 class Defaults::Impl {
  public:
   Impl(){
-    regOwtFactory(new ReceiveTimeOnlyOwtFactory);
+    regOwtFactory(new ReceiveTimePassThroughOwtFactory);
     regOwtFactory(new KalmanOwtFactory);
     regOwtFactory(new ConvexHullOwtFactory);
+    regOwtFactory(new DeviceTimePassThroughOwtFactory);
   }
 
   Impl(const Impl& other){
@@ -143,8 +144,8 @@ std::unique_ptr<OneWayTranslator> Defaults::Impl::createOwt(FilterAlgorithm fa) 
   if(e != owtFactoryReg_.end()){
     return e->second->createOwt();
   } else {
-    ROS_ERROR("Unknown device time filter algorithm : %u. Falling back to no filter (NopOwt).", static_cast<unsigned>(fa));
-    return std::unique_ptr<OneWayTranslator>(new NopOwt);
+    ROS_ERROR("Unknown device time filter algorithm : %u. Falling back to default translator (ReceiveTimePassThroughOwt).", static_cast<unsigned>(fa));
+    return std::unique_ptr<OneWayTranslator>(new ReceiveTimePassThroughOwt);
   }
 }
 
@@ -225,7 +226,9 @@ class DeviceTimeTranslator::Impl {
       switchingTimeSeconds_ = expectedSwitchingTimeSeconds;
       somethingWasUpdated = true;
       timeTranslator_ = defaults_.createOwt(expectedAlgo_);
-      if(dynamic_cast<NopOwt*>(timeTranslator_.get()) == nullptr && shouldSwitch(expectedSwitchingTimeSeconds)){
+      if(dynamic_cast<ReceiveTimePassThroughOwtFactory*>(timeTranslator_.get()) == nullptr
+          && dynamic_cast<DeviceTimePassThroughOwtFactory*>(timeTranslator_.get()) == nullptr
+          && shouldSwitch(expectedSwitchingTimeSeconds)){
         timeTranslator_ = std::unique_ptr<OneWayTranslator>(new SwitchingOwt(expectedSwitchingTimeSeconds, [this]() { return defaults_.createOwt(expectedAlgo_); }));
       }
       switchingTimeSeconds_ = expectedSwitchingTimeSeconds;
@@ -252,7 +255,8 @@ class DeviceTimeTranslator::Impl {
   }
 
   std::unique_ptr<OneWayTranslator> timeTranslator_;
-  FilterAlgorithm currentAlgo_ = FilterAlgorithm::ReceiveTimeOnly, expectedAlgo_ = FilterAlgorithm::ReceiveTimeOnly;
+  FilterAlgorithm currentAlgo_ = FilterAlgorithm::ReceiveTimePassThrough;
+  FilterAlgorithm expectedAlgo_ = FilterAlgorithm::ReceiveTimePassThrough;
   Defaults defaults_;
   ros::Publisher deviceTimePub_;
   ros::NodeHandle nh_;
@@ -282,8 +286,11 @@ DeviceTimeTranslator::DeviceTimeTranslator(const NS & nameSpace, const Defaults 
   pImpl_->getDeviceTimePub() = pImpl_->getNh().advertise<DeviceTimestamp>("", 5);
   pImpl_->getConfigSrv().setCallback(boost::bind(&DeviceTimeTranslator::configCallback, this, _1, _2));
 
-  if(pImpl_->getExpectedAlgo() == FilterAlgorithm::ReceiveTimeOnly){
-    ROS_WARN("Current %s/filterAlgo setting (=%u ~ ReceiveTimeOnly) causes the sensor's hardware clock to be ignore. Instead the receive time in the driver is used as timestamp.", nameSpace.toString().c_str(), unsigned(FilterAlgorithm::ReceiveTimeOnly));
+  if(pImpl_->getExpectedAlgo() == FilterAlgorithm::ReceiveTimePassThrough){
+    ROS_WARN("Current %s/filterAlgo setting (=%u ~ ReceiveTimePassThrough) causes the sensor's hardware clock to be ignore. Instead the receive time in the driver is used as translated timestamp.", nameSpace.toString().c_str(), unsigned(FilterAlgorithm::ReceiveTimePassThrough));
+  }
+  if(pImpl_->getExpectedAlgo() == FilterAlgorithm::DeviceTimePassThrough){
+    ROS_WARN("Current %s/filterAlgo setting (=%u ~ DeviceTimePassThrough) causes the receive time to be ignore. Instead the device time is passed through as translated timestamp.", nameSpace.toString().c_str(), unsigned(FilterAlgorithm::DeviceTimePassThrough));
   }
 }
 
