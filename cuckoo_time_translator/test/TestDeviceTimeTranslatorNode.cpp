@@ -77,7 +77,7 @@ TEST(DeviceTimeTranslator, ReceiveStamps) {
   for(auto & m : msgs){
     owt.updateAndTranslateToLocalTimestamp(RemoteTime(m.timePair.remote / MockCuckooDeviceDriver::kFreq), m.timePair.local);
   }
-  EXPECT_NEAR(expectedOffset.toSec(), owt.getOffset(), 0.5);
+  EXPECT_NEAR(expectedOffset.toSec(), owt.getOffset(), 0.8);
   EXPECT_NEAR(MockCuckooDeviceDriver::kSkew, owt.getSkew(), 0.01);
 
   EXPECT_EQ(FilterAlgorithm::ReceiveTimePassThrough, msgs.back().filterAlgo.type);
