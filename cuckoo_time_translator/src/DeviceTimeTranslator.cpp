@@ -73,7 +73,7 @@ class Defaults::Impl {
     setParam("filter_algo", static_cast<int>(filterAlgorithm));
   }
   void setSwitchTimeSecs(double secs){
-    setParam("switching_time", secs);
+    setParam("switch_time", secs);
   }
   void apply(ros::NodeHandle & nh) const{
     for(auto && op: operations){
