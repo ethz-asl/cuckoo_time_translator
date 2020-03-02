@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>cuckoo_time_translator_python</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <description>Export of some of the cuckoo_time_translator_algorithms functionality to python.
   In particular the one way translators.
   Additionally, there is the ctt_introspect.py scipt, that can help debugging and evaluating one way translators running in a hardware driver using cuckoo_time_translator.
