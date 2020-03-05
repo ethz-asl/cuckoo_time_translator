@@ -116,6 +116,11 @@ class DeviceTimeTranslator {
    * @return the current one way translator. Stays valid until the next update. Can be null.
    */
   const OneWayTranslator * getCurrentOwt() const;
+
+  /**
+   * Reset the translation state while keeping the expected settings such as expected algorithm or switch time.
+   */
+  void resetTranslation();
  private:
   void configCallback(DeviceTimeTranslatorConfig &config, uint32_t level);
 
@@ -153,7 +158,7 @@ class DeviceTimeUnwrapperAndTranslator {
 
   ros::Time translate(UnwrappedStamp unwrappedStamp) const;
   bool isReadyToTranslate() const;
-  
+
   FilterAlgorithm getCurrentFilterAlgorithm() const {
     return translator.getCurrentFilterAlgorithm();
   }
@@ -175,6 +180,13 @@ class DeviceTimeUnwrapperAndTranslator {
    */
   const OneWayTranslator* getCurrentOwt() const {
     return translator.getCurrentOwt();
+  }
+
+  /**
+   * Reset the translation state while keeping the expected settings such as expected algorithm or switch time.
+   */
+  void resetTranslation() {
+    translator.resetTranslation();
   }
  protected:
   Unwrapper timestampUnwrapper;
