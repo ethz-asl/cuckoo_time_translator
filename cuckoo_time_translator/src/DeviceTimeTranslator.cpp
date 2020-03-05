@@ -205,6 +205,9 @@ class DeviceTimeTranslator::Impl {
     return timeTranslator_.get();
   }
 
+  void resetTranslation() {
+    timeTranslator_.reset();
+  }
  private:
 
   template <typename Owt>
@@ -308,6 +311,10 @@ const OneWayTranslator* DeviceTimeTranslator::getCurrentOwt() const {
 
 void DeviceTimeTranslator::setFilterAlgorithm(FilterAlgorithm filterAlgorithm) {
   pImpl_->setExpectedAlgo(filterAlgorithm);
+}
+
+void DeviceTimeTranslator::resetTranslation() {
+  pImpl_->resetTranslation();
 }
 
 ros::Time DeviceTimeTranslator::update(const TimestampUnwrapper & timestampUnwrapper, const ros::Time & receiveTime, const double offsetSecs) {
