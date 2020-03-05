@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>cuckoo_time_translator</name>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <description>This library intends to do most of the dirty work required within a device driver that emoploys one way device time translation.
   This includes:
   * handling the one way translator
   * sending special timing messages (DeviceTimestamp) for debugging and evaluation (e.g. with ctt_introspect in the cuckoo_time_translator_python package)
-  * provide dynamic confiugration for the one way translation algorithm
+  * provide dynamic configuration for the one way translation algorithm
    </description>
 
   <author email="hannes.sommer@mavt.ethz.ch">Hannes Sommer</author>
