@@ -55,8 +55,8 @@ LocalTime DeviceTimePassThroughOwt::translateToLocalTimestamp(RemoteTime remoteT
   return LocalTime(static_cast<double>(remoteTimeTics));
 }
 
-LocalTime DeviceTimePassThroughOwt::updateAndTranslateToLocalTimestamp(RemoteTime /*remoteTimeTics*/, LocalTime localTimeSecs) {
-  return localTimeSecs;
+LocalTime DeviceTimePassThroughOwt::updateAndTranslateToLocalTimestamp(RemoteTime remoteTimeTics, LocalTime /*localTimeSecs*/) {
+  return translateToLocalTimestamp(remoteTimeTics);
 }
 
 bool DeviceTimePassThroughOwt::isReadyToTranslate() const {
