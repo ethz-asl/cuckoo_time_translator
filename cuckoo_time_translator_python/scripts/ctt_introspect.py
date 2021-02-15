@@ -97,7 +97,11 @@ if __name__ == '__main__':
       printDelayStat(d, lab)
 
     from cuckoo_time_translator_python.plotting import plotMultiDelays, show
-    plotMultiDelays(base_times, delaysToPlot, "time [sec]", labels, markersize=4, colors=colors, fileName=args.output, overwrite=args.force, show=False)
+    plotMultiDelays(
+        base_times, delaysToPlot, "time [sec]", labels, markersize=4,
+        colors=colors, fileName=args.output, overwrite=args.force, show=False,
+        title=topic
+    )
 
   if not args.output:
     from cuckoo_time_translator_python.plotting import show
