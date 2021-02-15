@@ -22,6 +22,7 @@ if __name__ == '__main__':
   parser.add_argument('-o', '--output', help='Output file to plot to (PDF format)')
   parser.add_argument('-b', '--baseLine', default="LeastSquares", help='Use this batch-method as base line; LeastSquares, ConvexHull, Index, ReceiveTime, DeviceTime')
   parser.add_argument('-f', '--owts', default=OwtsDefault, help='Additional OWTs (one way translators) to compare with. Default: ' + OwtsDefault)
+  parser.add_argument('-x', '--x-offset', dest='xOffset', nargs='?', help='Set x-axis (base line) offset that is added to all x-values before plotting. Default is -minimum(x-values), which makes it start at 0.')
   parser.add_argument('--dontPlotReceiveTimes', action='store_true', help='don\'t plot receive timestamps')
   parser.add_argument('--dontPlotPreTranslated', action='store_true', help='don\'t plot pre-translated timestamps, i.e., translated in the device driver')
   parser.add_argument('--invalidate', action='store_true', help='invalidate any possibly existing cache')
@@ -75,6 +76,7 @@ if __name__ == '__main__':
       base_times = np.array(baselineOwt.apply(ds.raw_hw_times, ds.receive_times))
       info("Baseline OWT after translation: " + baselineOwt.getConfigAndStateString())
 
+    xOffset = args.xOffset and float(args.xOffset)
     delaysToPlot = []
     labels = []
     colors = []
@@ -104,7 +106,7 @@ if __name__ == '__main__':
     plotMultiDelays(
         base_times, delaysToPlot, "time [sec]", labels, markersize=4,
         colors=colors, fileName=args.output, overwrite=args.force, show=False,
-        title=topic
+        title=topic, xOffset=xOffset
     )
 
   if not args.output:

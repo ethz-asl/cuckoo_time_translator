@@ -16,7 +16,7 @@ def show(block=True):
 
 
 def save(fig, legend, fileName, fileFormat='pdf', overwrite=False):
-    fullFileName = fileName + '.' + fileFormat if not fileName.endswith(fileFormat) else fileName
+    fullFileName = fileName + '.' + fileFormat if fileFormat and not fileName.endswith(fileFormat) else fileName
     if not overwrite and os.path.exists(fullFileName):
         warn("Output file %s exists already! Not overwriting!" % fullFileName)
         return
@@ -26,10 +26,12 @@ def save(fig, legend, fileName, fileFormat='pdf', overwrite=False):
     if legend:
         extra = (legend,)
 
-    fig.savefig(fullFileName, bbox_inches='tight', format=fileFormat)
+    fig.savefig(fullFileName, bbox_inches='tight', format=fileFormat, dpi=150)
 
 
-def plotMultiDelays(x, delays, xLabel, labels=None, title=None, markersize=1.5, fileName=None, overwrite=None, colors=None, block=False, show=False):
+def plotMultiDelays(x, delays, xLabel, labels=None, title=None, markersize=1.5,
+                    fileName=None, overwrite=None, colors=None, block=False,
+                    show=False, xOffset=None):
     if not colors:
         defaultColors = ['r', 'g', 'b']
         colors = list(reversed(defaultColors[:len(delays)]))
@@ -38,13 +40,14 @@ def plotMultiDelays(x, delays, xLabel, labels=None, title=None, markersize=1.5, 
 
     import matplotlib.gridspec as gridspec
 
-    figsize = (5, 2.5)
+    v = 1.5
+    figsize=(16/v, 8/v)
 
     breakX = False
 
     def plotMyDelays(ax):
         xA = np.array(x, dtype=float)
-        xA = xA - min(xA[~np.isnan(xA)])
+        xA = xA + (-min(xA[~np.isnan(xA)]) if xOffset is None else xOffset)
         if labels:
             for i, (d, l) in enumerate(zip(delays, labels)):
                 assert(len(xA) == len(d))
@@ -67,7 +70,7 @@ def plotMultiDelays(x, delays, xLabel, labels=None, title=None, markersize=1.5, 
         legend = ax.legend(loc='upper right', shadow=False)
 
     if fileName:
-        save(fig, legend, fileName, overwrite=overwrite)
+        save(fig, legend, fileName, fileFormat=None, overwrite=overwrite)
 
     if show:
       show(block)
