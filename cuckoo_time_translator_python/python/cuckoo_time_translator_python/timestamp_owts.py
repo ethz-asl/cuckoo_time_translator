@@ -54,6 +54,18 @@ class ConvexHullOwt (TimestampOwt):
     TimestampOwt.__init__(self, algorithms.ConvexHullOwt(), *args, **kwargs)
 
 
+class ReceiveTimePassThroughOwt (TimestampOwt):
+
+  def __init__(self, *args, **kwargs):
+    TimestampOwt.__init__(self, algorithms.ReceiveTimePassThroughOwt(), *args, **kwargs)
+
+
+class DeviceTimePassThroughOwt (TimestampOwt):
+
+  def __init__(self, *args, **kwargs):
+    TimestampOwt.__init__(self, algorithms.DeviceTimePassThroughOwt(), *args, **kwargs)
+
+
 class KalmanOwt(TimestampOwt):
 
   def __init__(self, outlierThreshold=None, sigmaSkew=None, *args, **kwargs):

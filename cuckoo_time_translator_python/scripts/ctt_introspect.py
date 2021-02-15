@@ -20,7 +20,7 @@ if __name__ == '__main__':
   parser.add_argument('-t', '--topic', nargs='+', help='The path to the bag file containing the DeviceTimestamp messages')
   parser.add_argument('-v', '--verbose', action='count', help='Increase verbosity (counted)')
   parser.add_argument('-o', '--output', help='Output file to plot to (PDF format)')
-  parser.add_argument('-b', '--baseLine', default="LeastSquares", help='Use this batch-method as base line; LeastSquares, ConvexHull, Index')
+  parser.add_argument('-b', '--baseLine', default="LeastSquares", help='Use this batch-method as base line; LeastSquares, ConvexHull, Index, ReceiveTime, DeviceTime')
   parser.add_argument('-f', '--owts', default=OwtsDefault, help='Additional OWTs (one way translators) to compare with. Default: ' + OwtsDefault)
   parser.add_argument('--dontPlotReceiveTimes', action='store_true', help='don\'t plot receive timestamps')
   parser.add_argument('--dontPlotPreTranslated', action='store_true', help='don\'t plot pre-translated timestamps, i.e., translated in the device driver')
@@ -63,6 +63,10 @@ if __name__ == '__main__':
       baselineOwt = LeastSquaresOwt()
     elif args.baseLine == "ConvexHull":
       baselineOwt = ConvexHullOwt(True)
+    elif args.baseLine == "ReceiveTime":
+      baselineOwt = ReceiveTimePassThroughOwt(False)
+    elif args.baseLine == "DeviceTime":
+      baselineOwt = DeviceTimePassThroughOwt(False)
     else:
       error("Unknown base line method : " + str(args.baseLine))
       sys.exit(1)
