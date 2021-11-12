@@ -4,12 +4,12 @@ project(cuckoo_time_translator_algorithms)
 find_package(catkin_simple REQUIRED)
 catkin_simple()
 
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(console_bridge REQUIRED)
 
 include_directories(
   ${console_bridge_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
+  ${Eigen3_INCLUDE_DIRS}
 )
 
 # enable warnings
@@ -45,7 +45,7 @@ cs_add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} ${console_bridge_LIBRARIES})
 
 cs_install()
-cs_export(INCLUDE_DIRS ${Eigen_INCLUDE_DIRS})
+cs_export(INCLUDE_DIRS ${Eigen3_INCLUDE_DIRS})
 
 if(CATKIN_ENABLE_TESTING)
   catkin_add_gtest(${PROJECT_NAME}-test

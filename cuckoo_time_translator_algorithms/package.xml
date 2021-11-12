@@ -15,6 +15,7 @@
   <buildtool_depend>catkin_simple</buildtool_depend>
 
   <depend>cmake_modules</depend>
+  <depend>eigen</depend>
   <depend>rosconsole_bridge</depend>
 
   <test_depend>gtest</test_depend>
