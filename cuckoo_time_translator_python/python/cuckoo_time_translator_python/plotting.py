@@ -1,14 +1,10 @@
-#!/usr/bin/python
-
-from __future__ import print_function
-
 import os
 import numpy as np
 import matplotlib
 
 import matplotlib.pyplot as plt
 
-from tools import *
+from .tools import *
 
 
 def show(block=True):
