@@ -8,7 +8,7 @@ import matplotlib
 
 import matplotlib.pyplot as plt
 
-from tools import *
+from .tools import *
 
 
 def show(block=True):

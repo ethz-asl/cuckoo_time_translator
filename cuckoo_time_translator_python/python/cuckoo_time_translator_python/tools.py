@@ -1,9 +1,8 @@
 from __future__ import print_function
 
-import exceptions
 try:
     from termcolor import colored
-except exceptions.ImportError:
+except ImportError:
     print("Unable to import termcolor.")
     print("Try:")
     print("sudo pip install termcolor")
