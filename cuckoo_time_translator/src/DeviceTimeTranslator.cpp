@@ -285,7 +285,7 @@ void DeviceTimeTranslator::configCallback(DeviceTimeTranslatorConfig &config, ui
 DeviceTimeTranslator::DeviceTimeTranslator(const NS & nameSpace, const Defaults & defaults) :
     pImpl_(new Impl(nameSpace, defaults))
 {
-  ROS_INFO("DeviceTimeTranslator is going to publishing device timestamps on %s.", pImpl_->getNh().getNamespace().c_str());
+  ROS_INFO("DeviceTimeTranslator is going to publish device timestamps on %s.", pImpl_->getNh().getNamespace().c_str());
   pImpl_->getDeviceTimePub() = pImpl_->getNh().advertise<DeviceTimestamp>("", 5);
   pImpl_->getConfigSrv().setCallback(boost::bind(&DeviceTimeTranslator::configCallback, this, _1, _2));
 
