@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>cuckoo_time_translator</name>
-  <version>0.0.3</version>
+  <version>0.1.0</version>
   <description>This library intends to do most of the dirty work required within a device driver that emoploys one way device time translation.
   This includes:
   * handling the one way translator
