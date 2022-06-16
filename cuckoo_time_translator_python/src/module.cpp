@@ -38,6 +38,9 @@ void exportTimestampOwts()
     .def("getStateString", &getString<&OneWayTranslator::printState>, "std::string getStateString() const")
     ;
 
+  class_<DeviceTimePassThroughOwt, bases<OneWayTranslator>>("DeviceTimePassThroughOwt", init<>())
+    ;
+
   class_<ConvexHullOwt, bases<OneWayTranslator>>("ConvexHullOwt", init<>())
     .def("getSkew", &ConvexHullOwt::getSkew, "double getSkew() const")
     .def("getOffset", &ConvexHullOwt::getOffset, "LocalTime getOffset() const")
