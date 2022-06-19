@@ -47,8 +47,13 @@ class TimestampOwt:
   def getConfigAndStateString(self):
     return self.owt.getNameAndConfigString() + ": " + self.owt.getStateString()
 
+class DeviceTimePassThroughOwt(TimestampOwt):
 
-class ConvexHullOwt (TimestampOwt):
+  def __init__(self, *args, **kwargs):
+    TimestampOwt.__init__(self, algorithms.DeviceTimePassThroughOwt(), *args, **kwargs)
+
+
+class ConvexHullOwt(TimestampOwt):
 
   def __init__(self, *args, **kwargs):
     TimestampOwt.__init__(self, algorithms.ConvexHullOwt(), *args, **kwargs)
