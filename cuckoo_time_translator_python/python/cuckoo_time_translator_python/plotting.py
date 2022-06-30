@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib
+import datetime
 
 import matplotlib.pyplot as plt
 
@@ -25,7 +26,7 @@ def save(fig, legend, fileName, fileFormat='pdf', overwrite=False):
     fig.savefig(fullFileName, bbox_inches='tight', format=fileFormat)
 
 
-def plotMultiDelays(x, delays, xLabel, labels=None, title=None, markersize=1.5, fileName=None, overwrite=None, colors=None, block=False, show=False):
+def plotMultiDelays(x, delays, xLabel, labels=None, title=None, markersize=1.5, fileName=None, overwrite=None, colors=None, block=False, show=False, wallclock=False):
     if not colors:
         defaultColors = ['r', 'g', 'b']
         colors = list(reversed(defaultColors[:len(delays)]))
@@ -39,8 +40,11 @@ def plotMultiDelays(x, delays, xLabel, labels=None, title=None, markersize=1.5, 
     breakX = False
 
     def plotMyDelays(ax):
-        xA = np.array(x, dtype=float)
-        xA = xA - min(xA[~np.isnan(xA)])
+        if wallclock:
+            xA = np.array([datetime.datetime.fromtimestamp(b) for b in x], dtype='datetime64')
+        else:
+            xA = np.array(x, dtype=float)
+            xA = xA - xA[~np.isnan(xA)].min()
         if labels:
             for i, (d, l) in enumerate(zip(delays, labels)):
                 assert(len(xA) == len(d))
